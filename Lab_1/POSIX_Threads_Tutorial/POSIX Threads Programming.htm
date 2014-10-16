@@ -1,0 +1,2989 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!-- saved from url=(0077)http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html -->
+<HTML><HEAD><TITLE>POSIX Threads Programming</TITLE>
+<META http-equiv=Content-Type content="text/html; charset=windows-1250">
+<SCRIPT language=JavaScript1.2 
+src="POSIX%20Threads%20Programming_files/jslib_llnl01.js" 
+tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/javascript/jslib_llnl01.js"></SCRIPT>
+<LINK href="POSIX%20Threads%20Programming_files/workshop.css" type=text/css 
+rel=StyleSheet 
+tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/workshop.css">
+<META content="MSHTML 6.00.6000.16397" name=GENERATOR></HEAD>
+<BODY><BASEFONT><!-- default font size --></FONT>
+<FORM><!-- required for interactive buttons --><A name=top></A>
+<SCRIPT language=JavaScript1.2>addNavigation()</SCRIPT>
+
+<P><BR><IMG height=107 src="POSIX%20Threads%20Programming_files/title.gif" 
+width=346 border=0 
+tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/images/title.gif"> 
+
+<P><BR><A name=TOC></A><SPAN class=heading2>Table of Contents </SPAN>
+<P>
+<OL>
+  <P>
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Overview">Pthreads 
+  Overview</A> 
+  <OL>
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Thread">What 
+    is a Thread?</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Pthread">What 
+    are Pthreads?</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#WhyPthreads">Why 
+    Pthreads?</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Designing">Designing 
+    Threaded Programs</A> </LI></OL>
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsAPI">The 
+  Pthreads API</A> 
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Management">Thread 
+  Management</A> 
+  <OL>
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#CreatingThreads">Creating 
+    Threads</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#TerminatingThreads">Terminating 
+    Thread Execution</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#CreateExample">Example: 
+    Pthread Creation and Termination</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PassingArguments">Passing 
+    Arguments to Threads</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ThreadIdentifiers">Thread 
+    Identifiers</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Joining">Joining 
+    Threads</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Detaching">Detaching 
+    / Joining Threads</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#JoiningExample">Example: 
+    Joining Threads</A> </LI></OL>
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Mutexes">Mutex 
+  Variables</A> 
+  <OL>
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexOverview">Mutex 
+    Variables Overview</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexCreation">Creating 
+    / Destroying Mutexes</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexLocking">Locking 
+    / Unlocking Mutexes</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexExample">Example: 
+    Using Mutexes</A> </LI></OL>
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConditionVariables">Condition 
+  Variables</A> 
+  <OL>
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarOverview">Condition 
+    Variables Overview</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarCreation">Creating/Destroying 
+    Condition Variables</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarSignal">Waiting 
+    / Signalling on Condition Variables</A> 
+    <LI><A 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarExample">Example: 
+    Using Condition Variables</A> </LI></OL>
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsMPI">Pthreads, 
+  MPI, SMPs, AIX and IBM's PE</A> 
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Routines">Pthread 
+  Library Routines Reference</A> 
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#References">References 
+  and More Information</A> 
+  <LI><A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/exercise.html" 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/exercise.html">Exercise</A> 
+
+  <LI><A onclick="resetTop('../index.html');" href="javascript://">Workshop 
+  Home</A> </LI></OL><A name=Overview><BR><BR></A><A name=Thread></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthreads Overview </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#TOC"><IMG 
+            alt="Up to Table of Contents" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Pthread"><IMG 
+            alt="Down to What are Pthreads?" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>What is a Thread? </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>A thread is an independent, schedulable, stream of instructions. In the 
+  UNIX environment, a thread exists within a process, and uses the process 
+  resources. However, a thread possesses its own independent flow of control. 
+  There can be multiple threads within a process. The concept of a "procedure", 
+  which can run independently within a process, may best describe a thread. 
+  <P></P>
+  <LI>To better understand what comprises a thread, it is helpful to understand 
+  the relationship between a process and a thread. A process is created by the 
+  operating system. Processes contain information about program resources and 
+  program execution state, including: 
+  <UL>
+    <LI>Process ID, process group ID, user ID, and group ID 
+    <LI>Environment 
+    <LI>Working directory. 
+    <LI>Program instructions 
+    <LI>Registers 
+    <LI>Stack 
+    <LI>Heap 
+    <LI>File descriptors 
+    <LI>Signal actions 
+    <LI>Shared libraries 
+    <LI>Inter-process communication tools (such as message queues, pipes, 
+    semaphores, or shared memory). </LI></UL>
+  <P>
+  <CENTER><IMG height=406 src="POSIX%20Threads%20Programming_files/process.gif" 
+  width=450 border=0 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/images/process.gif"></CENTER>
+  <P></P>
+  <LI>Threads use and exist within these process resources, yet are able to be 
+  scheduled by the operating system and run as independent entities within a 
+  process. 
+  <P></P>
+  <LI>A thread can possess an independent flow of control and be schedulable 
+  because it maintains its own: 
+  <UL>
+    <LI>Stack pointer 
+    <LI>Registers 
+    <LI>Scheduling properties (such as policy or priority) 
+    <LI>Set of pending and blocked signals 
+    <LI>Thread specific data. </LI></UL>
+  <P>
+  <CENTER><IMG height=398 src="POSIX%20Threads%20Programming_files/thread.gif" 
+  width=450 border=0 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/images/thread.gif"></CENTER>
+  <P></P>
+  <LI>A process can have multiple threads, all of which share the resources 
+  within a process and all of which execute within the same address space. 
+  Within a multi-threaded program, there are at any time multiple points of 
+  execution. 
+  <P></P>
+  <LI>Because threads within the same process share resources: 
+  <UL>
+    <LI>Changes made by one thread to shared system resources (such as closing a 
+    file) will be seen by all other threads. 
+    <LI>Two pointers having the same value point to the same data. 
+    <LI>Reading and writing to the same memory locations is possible, and 
+    therefore requires explicit synchronization by the programmer. </LI></UL>
+  <P></P>
+  <LI>On a uniprocessor, multi-threaded processes provide for concurrent 
+  execution. On a multiprocessor system, a process with multiple threads 
+  provides potential parallelism. 
+  <P></P>
+  <LI>Threads are peers (with some exception for the initial thread). They are 
+  on the same hierarchical level, since threads do not maintain a list of other 
+  threads that have been created and how they were created. </LI></UL><A 
+name=Pthread><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthreads Overview </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Thread"><IMG 
+            alt="Up to What is a Thread?" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#WhyPthreads"><IMG 
+            alt="Down to Why Pthreads?" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>What are Pthreads? </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Historically, hardware vendors have implemented their own proprietary 
+  versions of threads. These implementations differed substantially from each 
+  other making it difficult for programmers to develop portable threaded 
+  applications. 
+  <P></P>
+  <LI>In order to take full advantage of the capabilities provided by threads, a 
+  standardized programming interface was required. For UNIX systems, this 
+  interface has been specified by the IEEE POSIX 1003.1c standard (1995). 
+  Implementations which adhere to this standard are referred to as POSIX 
+  threads, or Pthreads. Most hardware vendors now offer Pthreads in addition to 
+  their proprietary API's. 
+  <P></P>
+  <LI>Pthreads are defined as a set of C language programming types and 
+  procedure calls, implemented with a <TT>pthreads.h</TT> header/include file 
+  and a thread library - though the this library may be part of another library, 
+  such as <TT>libc</TT>. 
+  <P></P>
+  <LI>There are several drafts of the POSIX threads standard. It is important to 
+  be aware of the draft number of a given implementation, because there are 
+  differences between drafts that can cause problems. </LI></UL><A 
+name=WhyPthreads><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthreads Overview </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Pthread"><IMG 
+            alt="Up to What are Pthreads?" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Designing"><IMG 
+            alt="Down to Designing Threaded Programs" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Why Pthreads? </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>The primary motivation for using Pthreads is to realize potential program 
+  performance gains. 
+  <P></P>
+  <LI>When compared to the cost of creating and managing a process, a thread can 
+  be created with much less operating system overhead. Managing threads requires 
+  fewer system resources than managing processes. 
+  <P>For example, the following table compares timing results for the 
+  <TT><B>fork()</B></TT> subroutine and the <TT><B>pthreads_create()</B></TT> 
+  subroutine. Timings reflect 50,000 process/thread creations, were performed 
+  with the <TT>timex</TT> utility, and units are in seconds. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TH bgColor=#ddddf0 rowSpan=2><SPAN class=heading3>IBM Architecture 
+        </SPAN>
+      <TH bgColor=#ddddf0 colSpan=3><SPAN class=heading3><TT>fork() 
+        </TT></SPAN>
+      <TH bgColor=#ddddf0 colSpan=3><SPAN class=heading3><TT>pthread_create() 
+        </TT></SPAN>
+    <TR>
+      <TH bgColor=#ddddf0><SPAN class=heading3>real </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>user </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>sys </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>real </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>user </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>sys </SPAN>
+    <TR vAlign=top align=right>
+      <TD align=left><B><NOBR>332 MHz 604e</NOBR> <BR><NOBR>4 CPUs/node</NOBR> 
+        <BR><NOBR>512 MB Memory</NOBR></B> 
+      <TD>92.42 
+      <TD>2.66 
+      <TD>105.29 
+      <TD>8.72 
+      <TD>4.97 
+      <TD>3.93 
+    <TR vAlign=top align=right>
+      <TD align=left><B><NOBR>222 MHz POWER3</NOBR> <BR><NOBR>8 
+        CPU/node</NOBR> <BR><NOBR>4 GB Memory</NOBR></B> 
+      <TD>80.05 
+      <TD>3.71 
+      <TD>82.30 
+      <TD>8.64 
+      <TD>3.74 
+      <TD>5.84 
+    <TR vAlign=top align=right>
+      <TD align=left><B><NOBR>375 MHz POWER3</NOBR> <BR><NOBR>16 
+        CPUs/node</NOBR> <BR><NOBR>16 GB Memory</NOBR></B> 
+      <TD>173.62 
+      <TD>13.86 
+      <TD>172.13 
+      <TD>9.58 
+      <TD>3.78 
+      <TD>6.74 </TR></TBODY></TABLE><A onclick=blur() 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/fork_vs_thread.txt" 
+  target=W2 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/fork_vs_thread.txt"><IMG 
+  height=20 alt="View source code" 
+  src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"> 
+  fork_vs_thread.txt</A> 
+  <P></P>
+  <LI>All threads within a process share the same address space. Inter-thread 
+  communication is more efficient and in many cases, easier to use than 
+  inter-process communication. 
+  <P></P>
+  <LI>Threaded applications offer potential performance gains and practical 
+  advantages over non-threaded applications in several other ways: 
+  <UL>
+    <LI>Overlapping CPU work with I/O: For example, a program may have sections 
+    where it is performing a long I/O operation. While one thread is waiting for 
+    an I/O system call to complete, CPU intensive work can be performed by other 
+    threads. 
+    <LI>Priority/real-time scheduling: tasks which are more important can be 
+    scheduled to supersede or interrupt lower priority tasks. 
+    <LI>Asynchronous event handling: tasks which service events of indeterminate 
+    frequency and duration can be interleaved. For example, a web server can 
+    both transfer data from previous requests and manage the arrival of new 
+    requests. </LI></UL>
+  <P></P>
+  <LI>Multi-threaded applications will work on a uniprocessor system, yet 
+  naturally take advantage of a multiprocessor system, without recompiling. 
+  <P></P>
+  <LI>In a multiprocessor environment, the most important reason for using 
+  Pthreads is to take advantage of potential parallelism. This will be the focus 
+  of the remainder of this tutorial. </LI></UL><A name=Designing><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthreads Overview </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#WhyPthreads"><IMG 
+            alt="Up to Why Pthreads?" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsAPI"><IMG 
+            alt="Down to The Pthreads API" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Designing Threaded Programs </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>In order for a program to take advantage of Pthreads, it must be able to 
+  be organized into discrete, independent tasks which can execute concurrently. 
+  For example, if routine1 and routine2 can be interchanged, interleaved and/or 
+  overlapped in real time, they are candidates for threading. 
+  <P>
+  <CENTER><IMG height=254 
+  src="POSIX%20Threads%20Programming_files/concurrent.gif" width=360 border=0 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/images/concurrent.gif"> 
+  </CENTER>
+  <P></P>
+  <LI>Tasks that may be suitable for threading include tasks that: 
+  <UL>
+    <LI>Block for potentially long waits 
+    <LI>Use many CPU cycles 
+    <LI>Must respond to asynchronous events 
+    <LI>Are of lesser or greater importance than other tasks 
+    <LI>Are able to be performed in parallel with other tasks </LI></UL>
+  <P></P>
+  <LI>Be careful if your application uses libraries or other objects that don't 
+  explicitly guarantee thread-safeness. When in doubt, assume that they are not 
+  thread-safe until proven otherwise. 
+  <P></P>
+  <LI>Several common models for threaded programs exist: 
+  <UL>
+    <P>
+    <LI><B><I>Manager/worker:</I></B> a single thread, the <I>manager</I> 
+    assigns work to other threads, the <I>workers</I>. Typically, the manager 
+    handles all input and parcels out work to the other tasks. At least two 
+    forms of the manager/worker model are common: static worker pool and dynamic 
+    worker pool. 
+    <P></P>
+    <LI><B><I>Pipeline:</I></B> a task is broken into a series of suboperations, 
+    each of which is handled in series, but concurrently, by a different thread. 
+    An automobile assembly line best describes this model. 
+    <P></P>
+    <LI><B><I>Peer:</I></B> similar to the manager/worker model, but after the 
+    main thread creates other threads, it participates in the work. 
+</LI></UL></LI></UL><A name=PthreadsAPI><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>The Pthreads API</SPAN></TD></SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Designing"><IMG 
+            alt="Up to Designing Threaded Programs" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Management"><IMG 
+            alt="Down to Thread Management" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><BR>
+<UL>
+  <P>
+  <LI>The Pthreads API is defined in the ANSI/IEEE POSIX 1003.1 - 1995 standard. 
+  Unlike MPI, this standard is not freely available on the Web - it must be <A 
+  href="javascript:if(confirm('http://standards.ieee.org/catalog/posix.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://standards.ieee.org/catalog/posix.html'" 
+  tppabs="http://standards.ieee.org/catalog/posix.html">purchased from IEEE</A>. 
+
+  <P></P>
+  <LI>The subroutines which comprise the Pthreads API can be informally grouped 
+  into three major classes: 
+  <OL>
+    <P>
+    <LI><B><I>Thread management:</I></B> The first class of functions work 
+    directly on threads - creating, detaching, joining, etc. They include 
+    functions to set/query thread attributes (joinable, scheduling etc.) 
+    <P></P>
+    <LI><B><I>Mutexes:</I></B> The second class of functions deal with 
+    synchronization, called a "mutex", which is an abbreviation for "mutual 
+    exclusion". Mutex functions provide for creating, destroying, locking and 
+    unlocking mutexes. They are also supplemented by mutex attribute functions 
+    that set or modify attributes associated with mutexes. 
+    <P></P>
+    <LI><B><I>Condition variables:</I></B> The third class of functions address 
+    communications between threads that share a mutex. They are based upon 
+    programmer specified conditions. This class includes functions to create, 
+    destroy, wait and signal based upon specified variable values. Functions to 
+    set/query condition variable attributes are also included. </LI></OL>
+  <P></P>
+  <LI>Naming conventions: All identifiers in the threads library begin with 
+  <B>pthread_</B> 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Routine Prefix </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Functional Group </SPAN>
+    <TR>
+      <TD><B>pthread_</B> 
+      <TD>Threads themselves and miscellaneous subroutines 
+    <TR>
+      <TD><B>pthread_attr_</B> 
+      <TD>Thread attributes objects 
+    <TR>
+      <TD><B>pthread_mutex_</B> 
+      <TD>Mutexes 
+    <TR>
+      <TD><B>pthread_mutexattr_</B> 
+      <TD>Mutex attributes objects. 
+    <TR>
+      <TD><B>pthread_cond_</B> 
+      <TD>Condition variables 
+    <TR>
+      <TD><B>pthread_condattr_</B> 
+      <TD>Condition attributes objects 
+    <TR>
+      <TD><B>pthread_key_</B> 
+      <TD>Thread-specific data keys </TR></TBODY></TABLE>
+  <P></P>
+  <LI>The concept of opaque objects pervades the design of the API. The basic 
+  calls work to create or modify opaque objects - the opaque objects can be 
+  modified by calls to attribute functions, which deal with opaque attributes. 
+  <P></P>
+  <LI>The Pthreads API contains over 60 subroutines. This tutorial will focus on 
+  a subset of these - specifically, those which are most likely to be 
+  immediately useful to the beginning Pthreads programmer. 
+  <P></P>
+  <LI>The <TT>pthreads.h</TT> header file must be included in each source file 
+  using the Pthreads library. 
+  <P></P>
+  <LI>The current POSIX standard is defined only for the C language. Efforts to 
+  define it for Fortran are not yet complete. Fortran programmers can use 
+  wrappers around C function calls. 
+  <P></P>
+  <LI>Implementation notes: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD><IMG height=21 
+        src="POSIX%20Threads%20Programming_files/ibm_logo.gif" width=43 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/ibm_logo.gif"> 
+
+      <TD>IBM's API includes a Fortran interface which may be used for 
+        convenience at the price of portability. It is covered in the <A 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#IBMFortran">XLF 
+        Language Reference</A>. </TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>A number of excellent books about Pthreads are available. Several of these 
+  are listed in the <A 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#References">References 
+  </A>section of this tutorial. </LI></UL><A name=Management><BR><BR></A><A 
+name=CreatingThreads></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsAPI"><IMG 
+            alt="Up to The Pthreads API" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#TerminatingThreads"><IMG 
+            alt="Down to Terminating Thread Execution" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Creating Threads </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Initially, your <TT>main()</TT> program comprises a single, default 
+  thread. All other threads must be explicitly created by the programmer. 
+  <P></P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_create.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_create.html">pthread_create</A> 
+        (thread,attr,start_routine,arg) </B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>This routine creates a new thread and makes it executable. Typically, 
+  threads are first created from within <TT>main()</TT> inside a single process. 
+  Once created, threads are peers, and may create other threads. 
+  <P></P>
+  <LI>The pthread_create subroutine returns the new thread ID via the 
+  <I>thread</I> argument. The caller can use this thread ID to perform various 
+  operations on the thread. This ID should be checked to ensure that the thread 
+  was successfully created. 
+  <P></P>
+  <LI>The <I>attr</I> parameter is used to set thread attributes. You can 
+  specify a thread attributes object, or NULL for the default values. Thread 
+  attributes are discussed later. 
+  <P></P>
+  <LI>The <I>start_routine</I> is the C routine that the thread will execute 
+  once it is created. 
+  <P></P>
+  <LI>A single argument may be passed to <I>start_routine</I> via <I>arg</I>. It 
+  must be passed by reference as a pointer cast of type void. 
+  <P></P>
+  <LI>Questions: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD width=40><IMG height=32 
+        src="POSIX%20Threads%20Programming_files/question2.gif" width=27 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/question2.gif"> 
+
+      <TD>How do you know when a thread will be scheduled to run by the 
+        operating system after it has been created...especially on an SMP 
+        machine? <BR><INPUT onclick="Answers('pthreads01')" type=button value=Answer> 
+    </TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>Implementation notes: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD><IMG height=21 
+        src="POSIX%20Threads%20Programming_files/ibm_logo.gif" width=43 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/ibm_logo.gif"> 
+
+      <TD>Check your local implementation for limits on thread creation. For 
+        example, AIX 4.2 specifies a maximum of 512 threads per process with a 
+        default thread stack size of 56K bytes. 
+</TD></TR></TBODY></TABLE></P></LI></UL><A name=TerminatingThreads><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#CreatingThreads"><IMG 
+            alt="Up to Creating Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#CreateExample"><IMG 
+            alt="Down to Example: Pthread Creation and Termination" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Terminating Thread Execution </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>There are several ways in which a Pthread may be terminated: 
+  <UL>
+    <LI>The thread returns from its starting routine (the main routine for the 
+    initial thread). 
+    <LI>The thread makes a call to the <TT>pthread_exit</TT> subroutine (covered 
+    below). 
+    <LI>The thread is canceled by another thread via the <TT>pthread_cancel</TT> 
+    routine (not covered here). 
+    <LI>The entire process is terminated due to a call to either the exec or 
+    exit subroutines. </LI></UL>
+  <P></P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_exit.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_exit.html">pthread_exit</A> 
+        (status) </B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>This routine is used to explicitly exit a thread. Typically, the 
+  <TT>pthread_exit()</TT> routine is called after a thread has completed its 
+  work and is no longer required to exists. 
+  <P></P>
+  <LI>If <TT>main()</TT> finishes before the threads it has created, and exits 
+  with <TT>pthread_exit()</TT>, the other threads will continue to execute. 
+  Otherwise, they will be automatically terminated when <TT>main()</TT> 
+  finishes. 
+  <P></P>
+  <LI>The programmer may optionally specify a termination <I>status</I>, which 
+  is stored as a void pointer for any thread that may join the calling thread. 
+  <P></P>
+  <LI>Cleanup: the <TT>pthread_exit()</TT> routine does not close files; any 
+  files opened inside the thread will remain open after the thread is 
+  terminated. 
+  <P></P>
+  <LI>Recommendations: 
+  <UL>
+    <P>
+    <LI>Use <TT>pthread_exit()</TT> to exit from all threads...especially 
+    <TT>main()</TT>. </LI></UL></LI></UL><A name=CreateExample><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#TerminatingThreads"><IMG 
+            alt="Up to Terminating Thread Execution" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PassingArguments"><IMG 
+            alt="Down to Passing Arguments to Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Example: Pthread Creation and Termination </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>This simple example code creates 5 threads with the 
+  <TT>pthread_create()</TT> routine. Each thread prints a "Hello World!" 
+  message, and then terminates with a call to <TT>pthread_exit()</TT>. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Example Code - Pthread Creation and 
+        Termination</SPAN> </B>
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+<FONT color=red>#include &lt;pthread.h&gt;</FONT>
+#include &lt;stdio.h&gt;
+#define NUM_THREADS     5
+
+void *PrintHello(void *threadid)
+{
+   printf("\n%d: Hello World!\n", threadid);
+   <FONT color=red>pthread_exit(NULL);</FONT>
+}
+
+int main()
+{
+   <FONT color=red>pthread_t threads[NUM_THREADS];</FONT>
+   int rc, t;
+   for(t=0;t &lt; NUM_THREADS;t++){
+      printf("Creating thread %d\n", t);
+      <FONT color=red>rc = pthread_create(&amp;threads[t], NULL, PrintHello, (void *)t);</FONT>
+      if (rc){
+         printf("ERROR; return code from pthread_create() is %d\n", rc);
+         exit(-1);
+      }
+   }
+   <FONT color=red>pthread_exit(NULL);</FONT>
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE></P></LI></UL><A 
+name=PassingArguments><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#CreateExample"><IMG 
+            alt="Up to Example: Pthread Creation and Termination" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ThreadIdentifiers"><IMG 
+            alt="Down to Thread Identifiers" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Passing Arguments to Threads </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>The <TT>pthread_create()</TT> routine permits the programmer to pass one 
+  argument to the thread start routine. For cases where multiple arguments must 
+  be passed, this limitation is easily overcome by creating a structure which 
+  contains all of the arguments, and then passing a pointer to that structure in 
+  the <TT>pthread_create()</TT> routine. 
+  <P></P>
+  <LI>All arguments must be passed by reference and cast to (void *). 
+  <P></P>
+  <LI>Questions: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD width=40><IMG height=32 
+        src="POSIX%20Threads%20Programming_files/question2.gif" width=27 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/question2.gif"> 
+
+      <TD>How can you safely pass data to newly created threads, given their 
+        non-deterministic start-up and scheduling? <BR><INPUT onclick="Answers('pthreads02')" type=button value=Answer> 
+    </TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>Three examples of argument passing to newly created threads follow: 
+  <P>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Thread Argument Passing - Example 1</SPAN> </B>
+    <TR>
+      <TD bgColor=#ddddf0>This code fragment demostrates how to pass a simple 
+        integer to each thread. The calling thread uses a unique data structure 
+        for each thread, insuring that each thread's argument remains intact 
+        throughout the program. 
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+int *taskids[NUM_THREADS];
+
+for(t=0;t &lt; NUM_THREADS;t++)
+{
+   taskids[t] = (int *) malloc(sizeof(int));
+   *taskids[t] = t;
+   printf("Creating thread %d\n", t);
+   <FONT color=red>rc = pthread_create(&amp;threads[t], NULL, PrintHello, 
+        (void *) taskids[t]);</FONT>
+   ...
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg1.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg1.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg1.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg1.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE>
+  <P><BR>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Thread Argument Passing - Example 2</SPAN> </B>
+    <TR>
+      <TD bgColor=#ddddf0>This example shows how to setup/pass multiple 
+        arguments via a structure. 
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+struct thread_data{
+   int  thread_id;
+   int  sum;
+   char *message;
+};
+
+struct thread_data thread_data_array[NUM_THREADS];
+
+void *PrintHello(void *threadarg)
+{
+   struct thread_data *my_data;
+   ...
+   my_data = (struct thread_data *) threadarg;
+   taskid = my_data-&gt;thread_id;
+   sum = my_data-&gt;sum;
+   hello_msg = my_data-&gt;message;
+   ...
+}
+
+int main()
+{
+   ...
+   thread_data_array[t].thread_id = t;
+   thread_data_array[t].sum = sum;
+   thread_data_array[t].message = messages[t];
+   <FONT color=red>rc = pthread_create(&amp;threads[t], NULL, PrintHello, 
+        (void *) &amp;thread_data_array[t]);</FONT>
+   ...
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg2.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg2.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg2.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg2.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE>
+  <P><BR>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Thread Argument Passing - Example 3</SPAN> 
+        (Incorrect) </B>
+    <TR>
+      <TD bgColor=#ddddf0>This example performs argument passing incorrectly. 
+        The loop which creates threads modifies the contents of the address 
+        passed as an argument, possibly before the created threads can access 
+        it. 
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+int rc, t;
+
+for(t=0;t &lt; NUM_THREADS;t++) 
+{
+   printf("Creating thread %d\n", t);
+   <FONT color=red>rc = pthread_create(&amp;threads[t], NULL, PrintHello, 
+        (void *) &amp;t);</FONT>
+   ...
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg3.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg3.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/hello_arg3.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/hello_arg3.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE>
+  <P></P></LI></UL><A name=ThreadIdentifiers><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PassingArguments"><IMG 
+            alt="Up to Passing Arguments to Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Joining"><IMG 
+            alt="Down to Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Thread Identifiers </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_self.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_self.html">pthread_self</A> 
+        () 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_equal.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_equal.html">pthread_equal</A> 
+        (thread1,thread2) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>The <TT>pthread_self()</TT> routine returns the unique, system assigned 
+  thread ID of the calling thread. 
+  <P></P>
+  <LI>The <TT>pthread_equal()</TT> routine compares two thread IDs. If the two 
+  IDs are different 0 is returned, otherwise a non-zero value is returned. 
+  <P></P>
+  <LI>Note that for both of these routines, the thread identifier objects are 
+  opaque and can not be easily inspected. Because thread IDs are opaque objects, 
+  the C language equivalence operator <TT>==</TT> should not be used to compare 
+  two thread IDs against each other, or to compare a single thread ID against 
+  another value. </LI></UL><A name=Joining><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ThreadIdentifiers"><IMG 
+            alt="Up to Thread Identifiers" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Detaching"><IMG 
+            alt="Down to Detaching / Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Joining Threads </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>"Joining" is one way to accomplish synchronization between threads. Two 
+  other ways, mutexes and condition variables will be discussed later. 
+  <P></P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_join.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_join.html">pthread_join</A> 
+        (threadid,status) </B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>The <TT>pthread_join()</TT> subroutine blocks the calling thread until the 
+  specified <I>threadid</I> thread terminates. 
+  <P></P>
+  <LI>The programmer is able to obtain the target thread's termination return 
+  status if specified through <TT>pthread_exit()</TT>, in the <I>status</I> 
+  parameter. 
+  <P></P>
+  <LI>It is impossible to join a detached thread (discussed next) </LI></UL><A 
+name=Detaching><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Joining"><IMG 
+            alt="Up to Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#JoiningExample"><IMG 
+            alt="Down to Example: Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Detaching / Joining Threads </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>When a thread is created, one of its possible attributes defines whether 
+  or not it may be joined. Detached means it can never be joined. 
+  <P></P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_init.html">pthread_attr_init</A> 
+        (attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setdetachstate.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setdetachstate.html">pthread_attr_setdetachstate</A> 
+        (attr,detachstate) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getdetachstate.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getdetachstate.html">pthread_attr_getdetachstate</A> 
+        (attr,detachstate) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_destroy.html">pthread_attr_destroy</A> 
+        (attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_join.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_join.html">pthread_detach</A> 
+        (threadid,status) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>Pthreads may be created in either a detached or joinable state. This is 
+  done by using the <TT>attr</TT> argument in the <TT>pthread_create()</TT> 
+  routine. The typical use of the attribute involves 4 steps: 
+  <OL>
+    <LI>Declaring a pthread attribute variable of the <TT>pthread_attr_t</TT> 
+    data type 
+    <LI>Initializing the attribute variable with <TT>pthread_attr_init()</TT> 
+    <LI>Setting the attribute detached status with 
+    <TT>pthread_attr_setdetachstate()</TT> 
+    <LI>Free library resources used by the attribute with 
+    <TT>pthread_attr_destroy()</TT> </LI></OL>
+  <P></P>
+  <LI>The <TT>pthread_detach()</TT> routine can be used to explicitly detach a 
+  thread even though it was created as joinable. There is no converse routine. 
+  <P></P>
+  <LI>Recommendations: 
+  <UL>
+    <P>
+    <LI>If you know in advance that a thread will never need to join with 
+    another thread, consider creating it in a detached state. Some system 
+    resources may be able to be freed. 
+    <LI>If a thread requires joining, consider explicitly creating it as 
+    joinable. This provides portability as not all implementations create 
+    threads as joinable by default. </LI></UL>
+  <P></P>
+  <LI>Implementation notes: 
+  <P>Current implementations differ in the default detached status at thread 
+  creation time. The final standard specifies joinable as the default. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD><IMG height=21 
+        src="POSIX%20Threads%20Programming_files/ibm_logo.gif" width=43 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/ibm_logo.gif"> 
+
+      <TD>IBM's AIX 4.2 implementation creates threads as detached by default, 
+        whereas AIX 4.3 creates threads as joinable. 
+    <TR vAlign=top>
+      <TD><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/sgi_logo.gif" width=30 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/sgi_logo.gif"> 
+
+      <TD>SGI creates threads as joinable. </TD></TR></TBODY></TABLE></P></LI></UL><A 
+name=JoiningExample><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Thread Management </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Detaching"><IMG 
+            alt="Up to Detaching / Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Mutexes"><IMG 
+            alt="Down to Mutex Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Example: Pthread Joining </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>This example demonstrates how to "wait" for thread completions by using 
+  the Pthread join routine. Since not all current implementations of Pthreads 
+  create threads in a joinable state, the threads in this example are explicitly 
+  created in a joinable state so that they can be joined later. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Example Code - Pthread Joining</SPAN> </B>
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+<FONT color=red>#include &lt;pthread.h&gt;</FONT>
+#include &lt;stdio.h&gt;
+#define NUM_THREADS	3
+
+void *BusyWork(void *null)
+{
+   int i;
+   double result=0.0;
+   for (i=0; i &lt; 1000000; i++)
+   {
+     result = result + (double)random();
+   }
+   printf("result = %d\n",result);
+   <FONT color=red>pthread_exit((void *) 0);</FONT>
+}
+
+void main()
+{
+   <FONT color=red>pthread_t thread[NUM_THREADS];</FONT>
+   <FONT color=red>pthread_attr_t attr;</FONT>
+   int rc, t, status;
+
+   /* Initialize and set thread detached attribute */
+   <FONT color=red>pthread_attr_init(&amp;attr);</FONT>
+   <FONT color=red>pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_JOINABLE);</FONT>
+
+   for(t=0;t &lt; NUM_THREADS;t++)
+   {
+      printf("Creating thread %d\n", t);
+      <FONT color=red>rc = pthread_create(&amp;thread[t], &amp;attr, BusyWork, NULL); </FONT>
+      if (rc)
+      {
+         printf("ERROR; return code from pthread_create() 
+                is %d\n", rc);
+         exit(-1);
+      }
+   }
+
+   /* Free attribute and wait for the other threads */
+   <FONT color=red>pthread_attr_destroy(&amp;attr);</FONT>
+   for(t=0;t &lt; NUM_THREADS;t++)
+   {
+      <FONT color=red> rc = pthread_join(thread[t], (void **)&amp;status);</FONT>
+      if (rc)
+      {
+         printf("ERROR; return code from pthread_join() 
+                is %d\n", rc);
+         exit(-1);
+      }
+      printf("Completed join with thread %d status= %d\n",t, status);
+   }
+
+   <FONT color=red>pthread_exit(NULL);</FONT>
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/join1.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/join1.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/join1.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/join1.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE></P></LI></UL><A name=Mutexes><BR><BR></A><A 
+name=MutexOverview></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Mutex Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#JoiningExample"><IMG 
+            alt="Up to Example: Joining Threads" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexCreation"><IMG 
+            alt="Down to Creating / Destroying Mutexes" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Overview </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Mutex is an abbreviation for "mutual exclusion". Mutex variables are one 
+  of the primary means of implementing thread synchronization. 
+  <P></P>
+  <LI>A mutex variable acts like a "lock" protecting access to a shared data 
+  resource. The basic concept of a mutex as used in Pthreads is that only one 
+  thread can lock (or own) a mutex variable at any given time. Thus, even if 
+  several threads try to lock a mutex only one thread will be successful. No 
+  other thread can own that mutex until the owning thread unlocks that mutex. 
+  Threads must "take turns" accessing protected data. 
+  <P></P>
+  <LI>Mutexes can be used to prevent "race" conditions. An example of a race 
+  condition involving a bank transaction is shown below: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Thread 1</SPAN></TH>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Thread 2</SPAN></TH>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Balance</SPAN></TH></TR>
+    <TR>
+      <TD bgColor=#ddddf0>Read balance: $1000</TD>
+      <TD bgColor=#ddddf0>&nbsp;</TD>
+      <TD bgColor=#ddddf0>$1000</TD></TR>
+    <TR>
+      <TD>&nbsp;</TD>
+      <TD>Read balance: $1000</TD>
+      <TD>$1000</TD></TR>
+    <TR>
+      <TD bgColor=#ddddf0>&nbsp;</TD>
+      <TD bgColor=#ddddf0>Deposit $200</TD>
+      <TD bgColor=#ddddf0>$1000</TD></TR>
+    <TR>
+      <TD>Deposit $200</TD>
+      <TD>&nbsp;</TD>
+      <TD>$1000</TD></TR>
+    <TR>
+      <TD bgColor=#ddddf0>Update balance $1000+$200</TD>
+      <TD bgColor=#ddddf0>&nbsp;</TD>
+      <TD bgColor=#ddddf0>$1200</TD></TR>
+    <TR>
+      <TD>&nbsp;</TD>
+      <TD>Update balance $1000+$200</TD>
+      <TD>$1200</TD></TR></TD></TBODY></TABLE>
+  <P></P>
+  <LI>In the above example, a mutex should be used to lock the "Balance" while a 
+  thread is using this shared data resource. 
+  <P></P>
+  <LI>Very often the action performed by a thread owning a mutex is the updating 
+  of global variables. This is a safe way to ensure that when several threads 
+  update the same variable, the final value is the same as what it would be if 
+  only one thread performed the update. The variables being updated belong to a 
+  "critical section". 
+  <P></P>
+  <LI>A typical sequence in the use of a mutex is as follows: 
+  <UL>
+    <LI>Create and initialize a mutex variable 
+    <LI>Several threads attempt to lock the mutex 
+    <LI>Only one succeeds and that thread owns the mutex 
+    <LI>The owner thread performs some set of actions 
+    <LI>The owner unlocks the mutex 
+    <LI>Another thread acquires the mutex and repeats the process 
+    <LI>Finally the mutex is destroyed </LI></UL>
+  <P></P>
+  <LI>When several threads compete for a mutex, the losers block at that call - 
+  an unblocking call is available with "trylock" instead of the "lock" call. 
+  </LI></UL><A name=MutexCreation><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Mutex Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexOverview"><IMG 
+            alt="Up to Mutex Variables Overview" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexLocking"><IMG 
+            alt="Down to Locking / Unlocking Mutexes" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Creating / Destroying Mutexes </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_init.html">pthread_mutex_init</A> 
+        (mutex,attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_destroy.html">pthread_mutex_destroy</A> 
+        (mutex) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_init.html">pthread_mutexattr_init</A> 
+        (attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_destroy.html">pthread_mutexattr_destroy</A> 
+        (attr) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>Mutex variables must be declared with type <TT>pthread_mutex_t</TT>, and 
+  must be initialized before they can be used. There are two ways to initialize 
+  a mutex variable: 
+  <OL>
+    <P>
+    <LI>Statically, when it is declared. For example: <BR><TT>pthread_mutex_t 
+    mymutex = PTHREAD_MUTEX_INITIALIZER;</TT> 
+    <P></P>
+    <LI>Dynamically, with the <TT>pthread_mutex_init()</TT> routine. This method 
+    permits setting mutex object attributes, <I>attr</I>. </LI></OL>
+  <P>The mutex is initially unlocked. 
+  <P></P>
+  <LI>The <I>attr</I> object is used to establish properties for the mutex 
+  object, and must be of type <TT>pthread_mutexattr_t</TT> if used (may be 
+  specified as NULL to accept defaults). The Pthreads standard defines three 
+  optional mutex attributes: 
+  <UL>
+    <LI>Protocol: Specifies the protocol used to prevent priority inversions for 
+    a mutex. 
+    <LI>Prioceiling: Specifies the priority ceiling of a mutex. 
+    <LI>Process-shared: Specifies the process sharing of a mutex. </LI></UL>
+  <P></P>
+  <LI>The <TT>pthread_mutexattr_init()</TT> and 
+  <TT>pthread_mutexattr_destroy()</TT> routines are used to create and destroy 
+  mutex attribute objects respectively. 
+  <P></P>
+  <LI><TT>pthread_mutex_destroy()</TT> should be used to free a mutex object 
+  which is no longer needed. 
+  <P></P>
+  <LI>Implementation notes: 
+  <P>Your implementation may/may not provide the three optional mutex 
+  attributes. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD><IMG height=21 
+        src="POSIX%20Threads%20Programming_files/ibm_logo.gif" width=43 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/ibm_logo.gif"> 
+
+      <TD>In AIX 4.2 and 4.3 mutex attributes are not defined. NULL should be 
+        used instead. </TD></TR></TBODY></TABLE></P></LI></UL><A 
+name=MutexLocking><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Mutex Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexCreation"><IMG 
+            alt="Up to Creating / Destroying Mutexes" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexExample"><IMG 
+            alt="Down to Example: Using Mutexes" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Locking / Unlocking Mutexes </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_lock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_lock.html">pthread_mutex_lock</A> 
+        (mutex) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_trylock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_trylock.html">pthread_mutex_trylock</A> 
+        (mutex) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_unlock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_unlock.html">pthread_mutex_unlock</A> 
+        (mutex) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>The <TT>pthread_mutex_lock()</TT> routine is used by a thread to acquire a 
+  lock on the specified <I>mutex</I> variable. If the mutex is already locked by 
+  another thread, this call will block the calling thread until the mutex is 
+  unlocked. 
+  <P></P>
+  <LI><TT>pthread_mutex_trylock()</TT> will attempt to lock a mutex. However, if 
+  the mutex is already locked, the routine will return immediately with a "busy" 
+  error code. This routine may be useful in preventing deadlock conditions, as 
+  in a priority-inversion situation. 
+  <P></P>
+  <LI><TT>pthread_mutex_unlock()</TT> will unlock a mutex if called by the 
+  owning thread. Calling this routine is required after a thread has completed 
+  its use of protected data if other threads are to acquire the mutex for their 
+  work with the protected data. An error will be returned if: 
+  <UL>
+    <LI>If the mutex was already unlocked 
+    <LI>If the mutex is owned by another thread </LI></UL>
+  <P></P>
+  <LI>Questions: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD width=40><IMG height=32 
+        src="POSIX%20Threads%20Programming_files/question2.gif" width=27 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/question2.gif"> 
+
+      <TD>Mutex contention: when more than one thread is waiting for a locked 
+        mutex, which thread will be granted the lock first after it is released? 
+        <BR><INPUT onclick="Answers('pthreads03')" type=button value=Answer> 
+    </TD></TR></TBODY></TABLE></P></LI></UL><A name=MutexExample><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Mutex Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#MutexLocking"><IMG 
+            alt="Up to Locking / Unlocking Mutexes" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConditionVariables"><IMG 
+            alt="Down to Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Example: Using Mutexes </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>This example program illustrates the use of mutex variables in a threads 
+  program that performs a dot product. The main data is made available to all 
+  threads through a globally accessible structure. Each thread works on a 
+  different part of the data. The main thread waits for all the threads to 
+  complete their computations, and then it prints the resulting sum. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Example Code - Using Mutexes</SPAN> </B>
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+<FONT color=red>#include &lt;pthread.h&gt;</FONT>
+#include &lt;stdio.h&gt;
+#include &lt;malloc.h&gt;
+
+/*   
+The following structure contains the necessary information  
+to allow the function "dotprod" to access its input data and 
+place its output into the structure.  This structure is 
+unchanged from the sequential version.
+*/
+
+typedef struct 
+ {
+   double      *a;
+   double      *b;
+   double     sum; 
+   int     veclen; 
+ } DOTDATA;
+
+/* Define globally accessible variables and a mutex */
+
+#define NUMTHRDS 4
+#define VECLEN 100
+   DOTDATA dotstr; 
+   <FONT color=red>pthread_t callThd[NUMTHRDS];</FONT>
+   <FONT color=red>pthread_mutex_t mutexsum;</FONT>
+
+/*
+The function dotprod is activated when the thread is created.
+All input to this routine is obtained from a structure 
+of type DOTDATA and all output from this function is written into
+this structure. The benefit of this approach is apparent for the 
+multi-threaded program: when a thread is created we pass a single
+argument to the activated function - typically this argument
+is a thread number. All  the other information required by the 
+function is accessed from the globally accessible structure. 
+*/
+
+void *dotprod(void *arg)
+{
+
+   /* Define and use local variables for convenience */
+
+   int i, start, end, offset, len ;
+   double mysum, *x, *y;
+   offset = (int)arg;
+     
+   len = dotstr.veclen;
+   start = offset*len;
+   end   = start + len;
+   x = dotstr.a;
+   y = dotstr.b;
+
+   /*
+   Perform the dot product and assign result
+   to the appropriate variable in the structure. 
+   */
+
+   mysum = 0;
+   for (i=start; i &lt; end ; i++) 
+    {
+      mysum += (x[i] * y[i]);
+    }
+
+   /*
+   Lock a mutex prior to updating the value in the shared
+   structure, and unlock it upon updating.
+   */
+   <FONT color=red>pthread_mutex_lock (&amp;mutexsum);</FONT>
+   dotstr.sum += mysum;
+   <FONT color=red>pthread_mutex_unlock (&amp;mutexsum);</FONT>
+
+   <FONT color=red>pthread_exit((void*) 0);</FONT>
+}
+
+/* 
+The main program creates threads which do all the work and then 
+print out result upon completion. Before creating the threads,
+the input data is created. Since all threads update a shared structure, 
+we need a mutex for mutual exclusion. The main thread needs to wait for
+all threads to complete, it waits for each one of the threads. We specify
+a thread attribute value that allow the main thread to join with the
+threads it creates. Note also that we free up handles  when they are
+no longer needed.
+*/
+
+void main (int argc, char *argv[])
+{
+   int i;
+   double *a, *b;
+   int status;
+   <FONT color=red>pthread_attr_t attr;</FONT>
+
+   /* Assign storage and initialize values */
+   a = (double*) malloc (NUMTHRDS*VECLEN*sizeof(double));
+   b = (double*) malloc (NUMTHRDS*VECLEN*sizeof(double));
+  
+   for (i=0; i &lt; VECLEN*NUMTHRDS; i++)
+    {
+     a[i]=1;
+     b[i]=a[i];
+    }
+
+   dotstr.veclen = VECLEN; 
+   dotstr.a = a; 
+   dotstr.b = b; 
+   dotstr.sum=0;
+
+   <FONT color=red>pthread_mutex_init(&amp;mutexsum, NULL);</FONT>
+         
+   /* Create threads to perform the dotproduct  */
+   <FONT color=red>pthread_attr_init(&amp;attr);</FONT>
+   <FONT color=red>pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_JOINABLE);</FONT>
+
+	for(i=0;i &lt; NUMTHRDS;i++)
+        {
+	/* 
+	Each thread works on a different set of data.
+	The offset is specified by 'i'. The size of
+	the data for each thread is indicated by VECLEN.
+	*/
+	<FONT color=red>pthread_create( &amp;callThd[i], &amp;attr, dotprod, (void *)i);</FONT>
+	}
+
+ 	<FONT color=red>pthread_attr_destroy(&amp;attr);</FONT>
+
+        /* Wait on the other threads */
+	for(i=0;i &lt; NUMTHRDS;i++)
+        {
+	  <FONT color=red>pthread_join( callThd[i], (void **)&amp;status);</FONT>
+	}
+
+   /* After joining, print out the results and cleanup */
+   printf ("Sum =  %f \n", dotstr.sum);
+   free (a);
+   free (b);
+   <FONT color=red>pthread_mutex_destroy(&amp;mutexsum);</FONT>
+   <FONT color=red>pthread_exit(NULL);</FONT>
+}   
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/dotprod_serial.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/dotprod_serial.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <I>Serial version</I> <BR><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/dotprod_mutex.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/dotprod_mutex.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <I>Pthreads version</I> </FONT></TD></TR></TBODY></TABLE></P></LI></UL><A 
+name=ConditionVariables><BR><BR></A><A name=ConVarOverview></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Condition Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Mutexes"><IMG 
+            alt="Up to Mutex Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsMPI"><IMG 
+            alt="Down to Pthreads, MPI, SMPs, AIX and IBM" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif" 
+            PE? s></A> </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Overview </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Condition variables provide yet another way for threads to synchronize. 
+  While mutexes implement synchronization by controlling thread access to data, 
+  condition variables allow threads to synchronize based upon the actual value 
+  of data. 
+  <P></P>
+  <LI>Without condition variables, the programmer would need to have threads 
+  continually polling (possibly in a critical section), to check if the 
+  condition is met. This can be very resource consuming since the thread would 
+  be continuously busy in this activity. A condition variable is a way to 
+  achieve the same goal without polling. 
+  <P></P>
+  <LI>A condition variable is always used in conjunction with a mutex lock. 
+  <P></P>
+  <LI>A representative sequence for using condition variables is shown below. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TH bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Calling Thread 
+</SPAN>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2>Declare and initialize global 
+        data/variables which require synchronization (such as "count") 
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2>Declare and initialize a condition 
+        variable object 
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2>Declare and initialize an associated mutex 
+
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2>Create threads A and B to do work 
+    <TR vAlign=top>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Thread A </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Thread B 
+        <!-- thread A --></SPAN>
+    <TR vAlign=top>
+      <TD>
+        <UL>
+          <LI>Do work up to the point where a certain condition must occur (such 
+          as "count" must reach a specified value) 
+          <LI>Lock associated mutex and check value of a global variable 
+          <LI>Call <TT>pthread_cond_wait()</TT> to perform a blocking wait for 
+          signal from Thread-B. Note that a call to <TT>pthread_cond_wait()</TT> 
+          automatically and atomically unlocks the associated mutex variable so 
+          that it can be used by Thread-B. 
+          <LI>When signalled, wake up. Mutex is automatically and atomically 
+          locked. 
+          <LI>Explicitly unlock mutex 
+          <LI>Continue </LI></UL><!-- thread B -->
+      <TD>
+        <UL>
+          <LI>Do work 
+          <LI>Lock associated mutex 
+          <LI>Change the value of the global variable that Thread-A is waiting 
+          upon. 
+          <LI>Check value of the global Thread-A wait variable. If it fulfills 
+          the desired condition, signal Thread-A. 
+          <LI>Unlock mutex. 
+          <LI>Continue </LI></UL>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2>Join / Continue 
+  </TD></TR></TBODY></TABLE></P></LI></UL><A name=ConVarCreation><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Condition Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarOverview"><IMG 
+            alt="Up to Condition Variables Overview" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarSignal"><IMG 
+            alt="Down to Waiting / Signalling on Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Creating / Destroying Condition Variables </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_init.html">pthread_cond_init</A> 
+        (condition,attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_destroy.html">pthread_cond_destroy</A> 
+        (condition) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_init.html">pthread_condattr_init</A> 
+        (attr) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_destroy.html">pthread_condattr_destroy</A> 
+        (attr) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>Condition variables must be declared with type <TT>pthread_cond_t</TT>, 
+  and must be initialized before they can be used. There are two ways to 
+  initialize a condition variable: 
+  <OL>
+    <P>
+    <LI>Statically, when it is declared. For example: <BR><TT>pthread_cond_t 
+    myconvar = PTHREAD_COND_INITIALIZER;</TT> 
+    <P></P>
+    <LI>Dynamically, with the <TT>pthread_cond_init()</TT> routine. The ID of 
+    the created condition variable is returned to the calling thread through the 
+    <I>condition</I> parameter. This method permits setting condition variable 
+    object attributes, <I>attr</I>. </LI></OL>
+  <P></P>
+  <LI>The optional <I>attr</I> object is used to set condition variable 
+  attributes. There is only one attribute defined for condition variables: 
+  process-shared, which allows the condition variable to be seen by threads in 
+  other processes. The attribute object, if used, must be of type 
+  <TT>pthread_condattr_t</TT> (may be specified as NULL to accept defaults). 
+  <P></P>
+  <LI>The <TT>pthread_condattr_init()</TT> and 
+  <TT>pthread_condattr_destroy()</TT> routines are used to create and destroy 
+  condition variable attribute objects. 
+  <P></P>
+  <LI><TT>pthread_cond_destroy()</TT> should be used to free a condition 
+  variable that is no longer needed. 
+  <P></P>
+  <LI>Implementation notes: 
+  <P>Check your implementation for the ability to use the condition variable 
+  attributes object. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=0 border=0>
+    <TBODY>
+    <TR vAlign=top>
+      <TD><IMG height=21 
+        src="POSIX%20Threads%20Programming_files/ibm_logo.gif" width=43 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/ibm_logo.gif"> 
+
+      <TD>In AIX 4.2 and 4.3 this option is not implemented and the value 
+        "NULL" should be used. </TD></TR></TBODY></TABLE></P></LI></UL><A 
+name=ConVarSignal><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Condition Variables </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarCreation"><IMG 
+            alt="Up to Creating/Destroying Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarExample"><IMG 
+            alt="Down to Example: Using Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Waiting / Signalling on Condition Variables </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>Routines: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD><TT><B><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_wait.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_wait.html">pthread_cond_wait</A> 
+        (condition,mutex) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_signal.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_signal.html">pthread_cond_signal</A> 
+        (condition) 
+        <P><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_broadcast.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_broadcast.html">pthread_cond_broadcast</A> 
+        (condition) </P></B></TT></TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI><TT>pthread_cond_wait()</TT> blocks the calling thread until the specified 
+  <I>condition</I> is signalled. This routine should be called while 
+  <I>mutex</I> is locked, and it will automatically release the mutex while it 
+  waits. Should also unlock <I>mutex</I> after signal has been received. 
+  <P></P>
+  <LI>The <TT>pthread_cond_signal()</TT> routine is used to signal (or wake up) 
+  another thread which is waiting on the condition variable. It should be called 
+  after <I>mutex</I> is locked, and must unlock <I>mutex</I> in order for 
+  <TT>pthread_cond_wait()</TT> routine to complete. 
+  <P></P>
+  <LI>The <TT>pthread_cond_broadcast()</TT> routine should be used instead of 
+  <TT>pthread_cond_signal()</TT> if more than one thread is in a blocking wait 
+  state. 
+  <P></P>
+  <LI>It is a logical error to call <TT>pthread_cond_signal()</TT> before 
+  calling <TT>pthread_cond_wait()</TT>. 
+  <P></P></LI></UL>
+<TABLE cellSpacing=0 cellPadding=0 border=0>
+  <TBODY>
+  <TR vAlign=top>
+    <TD width=40><IMG src="POSIX%20Threads%20Programming_files/warning5.gif" 
+      width=HEIGHT= 
+      tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/warning5.gif"> 
+
+    <TD>Proper locking and unlocking of the associated mutex variable is 
+      essential when using these routines. For example: 
+      <UL>
+        <LI>Failing to lock the mutex before calling 
+        <TT>pthread_cond_wait()</TT> may cause it NOT to block. 
+        <P></P>
+        <LI>Failing to unlock the mutex after calling 
+        <TT>pthread_cond_signal()</TT> may not allow a matching 
+        <TT>pthread_cond_wait()</TT> routine to complete (it will remain 
+        blocked). </LI></UL></TD></TR></TBODY></TABLE><A name=ConVarExample><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><FONT 
+            face=helvetica color=white size=+2><B>Condition 
+          Variables</B></FONT></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarSignal"><IMG 
+            alt="Up to Waiting / Signalling on Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsMPI"><IMG 
+            alt="Down to Pthreads, MPI, SMPs, AIX and IBM" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif" 
+            PE? s></A> </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><SPAN class=heading2>Example: Using Condition Variables </SPAN>
+<P><BR>
+<UL>
+  <P>
+  <LI>This simple example code demonstrates the use of several Pthread condition 
+  variable routines. The main routine creates three threads. Two of the threads 
+  perform work and update a "count" variable. The third thread waits until the 
+  count variable reaches a specified value. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TD bgColor=#ddddf0><IMG height=22 
+        src="POSIX%20Threads%20Programming_files/page01.gif" width=20 align=top 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/page01.gif"> 
+        <B><SPAN class=heading3>Example Code - Using Condition Variables</SPAN> 
+        </B>
+    <TR>
+      <TD><FONT size=-1><PRE><B>
+<FONT color=red>#include &lt;pthread.h&gt;</FONT>
+#include &lt;stdio.h&gt;
+
+#define NUM_THREADS  3
+#define TCOUNT 10
+#define COUNT_LIMIT 12
+
+int     count = 0;
+int     thread_ids[3] = {0,1,2};
+<FONT color=red>pthread_mutex_t count_mutex;</FONT>
+<FONT color=red>pthread_cond_t count_threshold_cv;</FONT>
+
+void *inc_count(void *idp) 
+{
+  int j,i;
+  double result=0.0;
+  int *my_id = idp;
+
+  for (i=0; i &lt; TCOUNT; i++) {
+    <FONT color=red>pthread_mutex_lock(&amp;count_mutex);</FONT>
+    count++;
+
+    /* 
+    Check the value of count and signal waiting thread when condition is
+    reached.  Note that this occurs while mutex is locked. 
+    */
+    if (count == COUNT_LIMIT) {
+      <FONT color=red>pthread_cond_signal(&amp;count_threshold_cv);</FONT>
+      printf("inc_count(): thread %d, count = %d  Threshold reached.\n", 
+             *my_id, count);
+      }
+    printf("inc_count(): thread %d, count = %d, unlocking mutex\n", 
+	   *my_id, count);
+    <FONT color=red>pthread_mutex_unlock(&amp;count_mutex);</FONT>
+
+    /* Do some work so threads can alternate on mutex lock */
+    for (j=0; j &lt; 1000; j++)
+      result = result + (double)random();
+    }
+  <FONT color=red>pthread_exit(NULL);</FONT>
+}
+
+void *watch_count(void *idp) 
+{
+  int *my_id = idp;
+
+  printf("Starting watch_count(): thread %d\n", *my_id);
+
+  /*
+  Lock mutex and wait for signal.  Note that the pthread_cond_wait 
+  routine will automatically and atomically unlock mutex while it waits. 
+  Also, note that if COUNT_LIMIT is reached before this routine is run by
+  the waiting thread, the loop will be skipped to prevent pthread_cond_wait
+  from never returning. 
+  */
+  <FONT color=red>pthread_mutex_lock(&amp;count_mutex);</FONT>
+  while (count &lt; COUNT_LIMIT) {
+    <FONT color=red>pthread_cond_wait(&amp;count_threshold_cv, &amp;count_mutex);</FONT>
+    printf("watch_count(): thread %d Condition signal 
+           received.\n", *my_id);
+    }
+  <FONT color=red>pthread_mutex_unlock(&amp;count_mutex);</FONT>
+  <FONT color=red>pthread_exit(NULL);</FONT>
+}
+
+void main()
+{
+  int i, rc;
+  <FONT color=red>pthread_t threads[3];</FONT>
+  <FONT color=red>pthread_attr_t attr;</FONT>
+
+  /* Initialize mutex and condition variable objects */
+  <FONT color=red>pthread_mutex_init(&amp;count_mutex, NULL);</FONT>
+  <FONT color=red>pthread_cond_init (&amp;count_threshold_cv, NULL);</FONT>
+
+  /*
+  For portability, explicitly create threads in a joinable state
+  so that they can be joined later.
+  */
+  <FONT color=red>pthread_attr_init(&amp;attr);</FONT>
+  <FONT color=red>pthread_attr_setdetachstate(&amp;attr, PTHREAD_CREATE_JOINABLE);</FONT>
+  <FONT color=red>pthread_create(&amp;threads[0], &amp;attr, inc_count, (void *)&amp;thread_ids[0]);</FONT>
+  <FONT color=red>pthread_create(&amp;threads[1], &amp;attr, inc_count, (void *)&amp;thread_ids[1]);</FONT>
+  <FONT color=red>pthread_create(&amp;threads[2], &amp;attr, watch_count, (void *)&amp;thread_ids[2]);</FONT>
+
+  /* Wait for all threads to complete */
+  for (i = 0; i &lt; NUM_THREADS; i++) {
+    <FONT color=red>pthread_join(threads[i], NULL);</FONT>
+  }
+  printf ("Main(): Waited on %d  threads. Done.\n", NUM_THREADS);
+
+  /* Clean up and exit */
+  <FONT color=red>pthread_attr_destroy(&amp;attr);</FONT>
+  <FONT color=red>pthread_mutex_destroy(&amp;count_mutex);</FONT>
+  <FONT color=red>pthread_cond_destroy(&amp;count_threshold_cv);</FONT>
+  <FONT color=red>pthread_exit(NULL);</FONT>
+
+}
+</B></PRE><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/condvar1.c" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/condvar1.c"><IMG 
+        height=20 alt="View source code" 
+        src="POSIX%20Threads%20Programming_files/source1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif"></A> 
+        <A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/condvar1.out" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/condvar1.out"><IMG 
+        height=20 alt="View sample output" 
+        src="POSIX%20Threads%20Programming_files/output1.gif" width=65 border=0 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/output1.gif"></A> 
+        </FONT></TD></TR></TBODY></TABLE></P></LI></UL><A name=PthreadsMPI><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthreads, MPI, SMPs, AIX and IBM's PE </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#ConVarExample"><IMG 
+            alt="Up to Example: Using Condition Variables" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+            <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Routines"><IMG 
+            alt="Down to Pthread Library Routines Reference" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><BR>
+<UL>
+  <P>
+  <LI>The primary motivation for considering the use of Pthreads within an MPI 
+  application on an IBM SMP node is to achieve <B><I>maximum</I></B> 
+  communication performance and CPU utilization. 
+  <P></P>
+  <LI>For an MPI-only application, the most efficient use of the CPUs in an SMP 
+  node is achieved by running at least one (and usually only one) MPI task on 
+  each CPU. For an IBM SP, this means there are multiple MPI tasks on an SP node 
+  - usually one per CPU. 
+  <P></P>
+  <LI>However, when there are multiple MPI tasks on an IBM SP node, 
+  communications are <B><I>not always optimal!</I></B> Tasks must compete for 
+  the adapter bandwidth. The table below demonstrates how per-task 
+  communications bandwidth decreases when more than one MPI task is 
+  communicating on an SMP node. 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=3 border=1>
+    <TBODY>
+    <TR>
+      <TH bgColor=#ddddf0 colSpan=4><SPAN class=heading3>Comparison of MPI 
+        Communications on Various IBM SMPs</SPAN> 
+    <TR>
+      <TH bgColor=#ddddf0><SPAN class=heading3>SMP Processor Type</SPAN> 
+      <TH bgColor=#ddddf0><SPAN class=heading3>Number of MPI <BR>Tasks Per 
+        Node</SPAN> 
+      <TH bgColor=#ddddf0><SPAN class=heading3>Per Task Bandwidth <BR>US 
+        Protocol <BR>(MB/sec) </SPAN>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Per Task Bandwidth <BR>IP 
+        Protocol <BR>(MB/sec) </SPAN>
+    <TR align=middle>
+      <TD rowSpan=3><B>604e 332 MHz <BR>(4 cpus)</B> <A 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#notes"><SUP><FONT 
+        color=blue size=-1>1</FONT></SUP></A> 
+      <TD>1 
+      <TD>86 
+      <TD>32 
+    <TR align=middle>
+      <TD>2 
+      <TD>67 
+      <TD>30 
+    <TR align=middle>
+      <TD>4 
+      <TD>32 
+      <TD>26 
+    <TR align=middle>
+      <TD rowSpan=4><B>POWER3 222 MHz <BR>(8 cpus)</B> <A 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#notes"><SUP><FONT 
+        color=blue size=-1>1</FONT></SUP></A> 
+      <TD>1 
+      <TD>111 
+      <TD>48 
+    <TR align=middle>
+      <TD>2 
+      <TD>64 
+      <TD>55 
+    <TR align=middle>
+      <TD>4 
+      <TD>33 
+      <TD>51 
+    <TR align=middle>
+      <TD>8 
+      <TD>n/a 
+      <TD>46 </TD>
+    <TR align=middle>
+      <TD rowSpan=5><B>POWER3 375 MHz <BR>(16 cpus)</B> <A 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#notes"><SUP><FONT 
+        color=blue size=-1>1</FONT></SUP></A> 
+      <TD>1 
+      <TD>390 
+      <TD>77 
+    <TR align=middle>
+      <TD>2 
+      <TD>315 - 348 
+      <TD>65 
+    <TR align=middle>
+      <TD>4 
+      <TD>219 
+      <TD>54 
+    <TR align=middle>
+      <TD>8 
+      <TD>116-134 
+      <TD>44 
+    <TR align=middle>
+      <TD>16 
+      <TD>55-66 
+      <TD>28 </TR></TBODY></TABLE>
+  <P></P>
+  <LI>For strictly on-node MPI communications, the effect of decreasing per-task 
+  bandwidth can be minimized by telling IBM's MPI library to use shared memory 
+  for on-node communications (MP_SHARED_MEMORY=yes). In this case, all tasks 
+  will have approximately the same bandwidth - which seems to depend upon the 
+  processor type, but is less than 300 MB/sec. 
+  <P></P>
+  <LI>Using Pthreads to reduce/replace the number of MPI tasks performing 
+  communications on each node may improve an application's performance. 
+  <P><B>Worst case:</B> Every data reference by a thread requires a memory read. 
+  In this case, a thread's "bandwidth" is limited by the machine's memory-to-CPU 
+  bandwidth: 
+  <UL>
+    <LI>604e memory-cpu bus speed: 1.3 GB/sec 
+    <LI>POWER3 memory-cpu bus speed: 1.6 GB/sec </LI></UL>
+  <P>This is still much better than the shared-memory MPI implementation on the 
+  IBM SP. 
+  <P><B>Best case:</B> Data is local to a thread's cache, offering the potential 
+  for much greater "bandwidth". <!---------
+<P>
+<LI>An example of how pthreads performs better than MPI for same-node
+    communications is shown below.  In this test, the MPI code passed
+    one integer messages between two processes 100,000 times.  The pthreads
+    code used two threads, each of which performed 100,000 concurrent updates 
+    to a mutex protected integer global variable.  All results are in seconds
+    using User Space communications.
+<P>
+<TABLE BORDER=1 CELLSPACING=0 CELLPADDING=5>
+<TR>
+<TH BGCOLOR=DDDDF0><SPAN CLASS=heading3>IBM SMP Architecture
+<TH BGCOLOR=DDDDF0><SPAN CLASS=heading3><TT>MPI inter-node
+<TH BGCOLOR=DDDDF0><SPAN CLASS=heading3><TT>MPI intra-node
+<BR>MP_SHARED_MEMORY=yes
+<TH BGCOLOR=DDDDF0><SPAN CLASS=heading3><TT>pthreads
+
+<TR VALIGN=top ALIGN=right>
+<TD ALIGN=left>
+<B><NOBR>604e <BR>332 MHz <BR>4 CPUs</B>
+<TD>5.66
+<TD>
+<TD>0.11
+
+<TR VALIGN=top ALIGN=right>
+<TD ALIGN=left><B>POWER3 <BR>222 MHz <BR>8 CPUs</B>
+<TD>5.60
+<TD>3.98
+<TD>0.08
+ 
+<TR VALIGN=top ALIGN=right>
+<TD ALIGN=left><B>POWER3 <BR>375 MHz <BR>16 CPUs</B>
+<TD>
+<TD>
+<TD>
+</TABLE>
+
+<A HREF="mpi_vs_thread.txt" tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/mpi_vs_thread.txt" TARGET=W2 onClick="blur()">
+<IMG SRC="source1.gif" tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/source1.gif" WIDTH=65 HEIGHT=20 BORDER=0 
+ALT='View source code'> mpi_vs_thread.txt</A>
+----------->
+  <P></P>
+  <LI>Compiling with threads: Use the following compiler commands as appropriate 
+  to insure thread-safe/enabled executables: 
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR>
+      <TH bgColor=#ddddf0><SPAN class=heading3>Compiler<BR>Command</SPAN> 
+      <TH bgColor=#ddddf0><SPAN class=heading3>Description</SPAN> 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/xlc.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/xlc.man.html"><B>xlc_r<BR>cc_r</A></B> 
+
+      <TD>C pthreads compiler with default language level of ANSI 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/xlf.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/xlf.man.html"><B>xlf_r</A></B> 
+
+      <TD>Fortran compiler with IBM Pthreads API (non-portable). 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/xlf.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/xlf.man.html"><B>xlf90_r</A></B> 
+
+      <TD>Fortran 90 pthreads compiler 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/xlc.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/xlc.man.html"><B>xlC_r</A></B> 
+
+      <TD>C++ pthreads compiler 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpcc_r.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/mpcc_r.man.html"><B>mpcc_r</A></B> 
+
+      <TD>C MPI-pthreads compiler script 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpxlf_r.man.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/mpxlf_r.man.html"><B>mpxlf_r</A></B> 
+
+      <TD>Fortran MPI-pthreads compiler script 
+    <TR>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpCC_r.man-1.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/mpCC_r.man.html"><B>mpCC_r</A></B> 
+
+      <TD>C++ MPI-pthreads compiler script </TD></TR></TBODY></TABLE>
+  <P></P>
+  <LI>An example code, which uses both MPI and Pthreads on an IBM SMP system is 
+  available below. The serial, threads-only, MPI-only and MPI-with-threads 
+  versions are all available for comparison and review. 
+  <UL>
+    <LI><A onclick=blur() 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpithreads_serial.c" 
+    target=W2 
+    tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/mpithreads_serial.c">Serial</A> 
+
+    <LI><A onclick=blur() 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpithreads_threads.c" 
+    target=W2 
+    tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/mpithreads_threads.c">Pthreads 
+    only</A> 
+    <LI><A onclick=blur() 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpithreads_mpi.c" 
+    target=W2 
+    tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/mpithreads_mpi.c">MPI 
+    only </A>
+    <LI><A onclick=blur() 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpithreads_both.c" 
+    target=W2 
+    tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/mpithreads_both.c">MPI 
+    with pthreads</A> 
+    <LI><A onclick=blur() 
+    href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/mpithreads.makefile" 
+    target=W2 
+    tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/mpithreads.makefile">makefile</A> 
+    </LI></UL>
+  <P></P>
+  <LI>Other Considerations: 
+  <UL>
+    <P>
+    <LI>The AIX implementation of Pthreads does not provide all of the optional 
+    features cited in the POSIX standard, such as mutex and condition variable 
+    attributes. 
+    <P></P>
+    <LI>Depending upon the version of AIX, threads are created in a either 
+    detached state (AIX 4.2) or a joinable state (AIX 4.3). For older verions of 
+    AIX, threads must be explicitly created as joinable if they are to be joined 
+    later. See /usr/include/pthreads.h for more AIX implementation details 
+  </LI></UL></LI></UL><A name=Routines><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>Pthread Library Routines Reference </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#PthreadsMPI"><IMG 
+            alt="Up to Pthreads, MPI, SMPs, AIX and IBM" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif" 
+            PE? s></A> <A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#References"><IMG 
+            alt="Down to References and More Information" 
+            src="POSIX%20Threads%20Programming_files/arrowDown.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowDown.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><BR>
+<UL>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Pthread 
+        Functions</SPAN> 
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=9><B>Thread Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_create.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_create.html">pthread_create</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_exit.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_exit.html">pthread_exit</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_join.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_join.html">pthread_join</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_once.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_once.html">pthread_once</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_kill.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_kill.html">pthread_kill</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_self.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_self.html">pthread_self</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_equal.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_equal.html">pthread_equal</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_yield.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_yield.html">pthread_yield</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_join.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_join.html">pthread_detach</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=4><B>Thread Specific Data</B> 
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_key_create.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_key_create.html">pthread_key_create 
+        </A>
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_key_delete.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_key_delete.html">pthread_key_delete</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_getspecific.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_getspecific.html">pthread_getspecific 
+        </A>
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_setspecific.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_setspecific.html">pthread_setspecific</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=6><B>Thread Cancellation</B> 
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cancel.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cancel.html">pthread_cancel</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cleanup_pop.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cleanup_pop.html">pthread_cleanup_pop</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cleanup_push.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cleanup_push.html">pthread_cleanup_push</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_setcancelstate.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_setcancelstate.html">pthread_setcancelstate</A> 
+
+    <TR vAlign=top>
+      <TD>pthread_getcancelstate 
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_testcancel.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_testcancel.html">pthread_testcancel</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Thread Scheduling</B> 
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_getschedparam.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_getschedparam.html">pthread_getschedparam</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_setschedparam.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_setschedparam.html">pthread_setschedparam</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0><B>Signals</B> 
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_sigmask.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_sigmask.html">pthread_sigmask</A> 
+      </TD></TR></TBODY></TABLE>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Pthread Attribute 
+        Functions </SPAN>
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Basic Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_init.html">pthread_attr_init</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_destroy.html">pthread_attr_destroy</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Detachable or Joinable</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setdetachstate.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setdetachstate.html">pthread_attr_setdetachstate</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getdetachstate.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getdetachstate.html">pthread_attr_getdetachstate</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=4><B>Specifying Stack 
+        Information</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getstackaddr.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getstackaddr.html">pthread_attr_getstackaddr</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getstacksize.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getstacksize.html">pthread_attr_getstacksize</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setstackaddr.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setstackaddr.html">pthread_attr_setstackaddr</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setstacksize.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setstacksize.html">pthread_attr_setstacksize</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=8><B>Thread Scheduling 
+        Attributes</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getschedparam.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getschedparam.html">pthread_attr_getschedparam</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setschedparam.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setschedparam.html">pthread_attr_setschedparam</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getschedpolicy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getschedpolicy.html">pthread_attr_getschedpolicy</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setschedpolicy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setschedpolicy.html">pthread_attr_setschedpolicy</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setinheritsched.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setinheritsched.html">pthread_attr_setinheritsched</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getinheritsched.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getinheritsched.html">pthread_attr_getinheritsched</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_setscope.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_setscope.html">pthread_attr_setscope</A> 
+
+    <TR vAlign=top>
+      <TD><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_attr_getscope.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_attr_getscope.html">pthread_attr_getscope</A> 
+      </TD></TR></TBODY></TABLE>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Mutex 
+        Functions</SPAN> 
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=5><B>Mutex Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_init.html">pthread_mutex_init</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_destroy.html">pthread_mutex_destroy</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_lock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_lock.html">pthread_mutex_lock</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_unlock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_unlock.html">pthread_mutex_unlock</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_trylock.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_trylock.html">pthread_mutex_trylock</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Priority Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_setprioceiling.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_setprioceiling.html">pthread_mutex_setprioceiling</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutex_getprioceiling.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutex_getprioceiling.html">pthread_mutex_getprioceiling</A> 
+      </TD></TR></TBODY></TABLE>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Mutex Attribute 
+        Functions</SPAN> 
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Basic Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_init.html">pthread_mutexattr_init</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_destroy.html">pthread_mutexattr_destroy</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Sharing</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_getpshared.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_getpshared.html">pthread_mutexattr_getpshared</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_setpshared.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_setpshared.html">pthread_mutexattr_setpshared</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Protocol Attributes</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_getprotocol.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_getprotocol.html">pthread_mutexattr_getprotocol</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_setprotocol.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_setprotocol.html">pthread_mutexattr_setprotocol</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Priority Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_setprioceiling.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_setprioceiling.html">pthread_mutexattr_setprioceiling</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_mutexattr_getprioceiling.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_mutexattr_getprioceiling.html">pthread_mutexattr_getprioceiling</A> 
+      </TD></TR></TBODY></TABLE>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Condition Variable 
+        Functions</SPAN> 
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=6><B>Basic Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_init.html">pthread_cond_init</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_destroy.html">pthread_cond_destroy</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_signal.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_signal.html">pthread_cond_signal</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_broadcast.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_broadcast.html">pthread_cond_broadcast</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_wait.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_wait.html">pthread_cond_wait</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_cond_timedwait.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_cond_timedwait.html">pthread_cond_timedwait</A> 
+      </TD></TR></TBODY></TABLE>
+  <P>
+  <TABLE cellSpacing=0 cellPadding=5 width="90%" border=1>
+    <TBODY>
+    <TR vAlign=top>
+      <TD bgColor=#ddddf0 colSpan=2><SPAN class=heading3>Condition Variable 
+        Attribute Functions</SPAN> 
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Basic Management</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_init.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_init.html">pthread_condattr_init</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_destroy.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_destroy.html">pthread_condattr_destroy</A> 
+
+    <TR vAlign=top>
+      <TD width="25%" bgColor=#ddddf0 rowSpan=2><B>Sharing</B> 
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_getpshared.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_getpshared.html">pthread_condattr_getpshared</A> 
+
+    <TR vAlign=top>
+      <TD width="75%"><A onclick=blur() 
+        href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/pthread_condattr_setpshared.html" 
+        target=W2 
+        tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/man/pthread_condattr_setpshared.html">pthread_condattr_setpshared</A> 
+      </TD></TR></TBODY></TABLE></P></UL><A name=References><BR><BR></A>
+<TABLE cellSpacing=0 cellPadding=0 width="100%" border=1>
+  <TBODY>
+  <TR>
+    <TD>
+      <TABLE cellSpacing=0 cellPadding=5 width="100%" border=0>
+        <TBODY>
+        <TR>
+          <TD background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><SPAN 
+            class=heading1>References and More Information </SPAN></TD>
+          <TD align=right background=POSIX%20Threads%20Programming_files/bg2.gif 
+          bgColor=navy 
+          tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/bg2.gif"><A 
+            href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/MAIN.html#Routines"><IMG 
+            alt="Up to Pthread Library Routines Reference" 
+            src="POSIX%20Threads%20Programming_files/arrowUp.gif" border=0 
+            tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/images/arrowUp.gif"></A> 
+          </TD></TR></TBODY></TABLE></TD></TR></TBODY></TABLE>
+<P><BR>
+<UL>
+  <P>
+  <LI>"Pthreads Programming". B. Nichols et al. O'Reilly and Associates. 
+  <P></P>
+  <LI>"Threads Primer". B. Lewis and D. Berg. Prentice Hall 
+  <P></P>
+  <LI>"Programming With POSIX Threads". D. Butenhof. Addison Wesley <BR><A 
+  href="javascript:if(confirm('http://www.awl.com/cseng/titles/0-201-63392-2  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www.awl.com/cseng/titles/0-201-63392-2'" 
+  tppabs="http://www.awl.com/cseng/titles/0-201-63392-2">www.awl.com/cseng/titles/0-201-63392-2</A> 
+
+  <P></P>
+  <LI>"Programming With Threads". S. Kleiman et al. Prentice Hall 
+  <P><A name=IBMFortran></A></P>
+  <LI>XL Fortran for AIX Language Reference <BR><A 
+  href="javascript:if(confirm('http://www-4.ibm.com/software/ad/fortran  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?'))window.location='http://www-4.ibm.com/software/ad/fortran'" 
+  tppabs="http://www-4.ibm.com/software/ad/fortran">www-4.ibm.com/software/ad/fortran</A> 
+  <BR>The version 7 release 1 manual covers the IBM Pthreads Library Module in 
+  Chapter 15. An example IBM Fortran Pthreads program</A> is provided <A 
+  onclick=blur() 
+  href="http://cs.pub.ro/~apc/2003/resources/pthreads/LLNL_PthreadsTutorial/arrayloops.f" 
+  target=W2 
+  tppabs="http://www.llnl.gov/computing/tutorials/workshops/workshop/pthreads/samples/arrayloops.f">here</A>. 
+  </LI></UL><A name=notes></A>
+<P><B>Notes</B> 
+<P>
+<TABLE border=0>
+  <TBODY>
+  <TR vAlign=top>
+    <TD align=right width=35><B>1</B> 
+    <TD>Timing results were obtained on LLNL production (604e and POWER3 
+      16-cpu) and testing (POWER3 8-cpu) systems using point-to-point, blocking 
+      send-receive pairs. These figures are approximations for what to expect 
+      with coupled send-receives. </TR></TBODY></TABLE>
+<SCRIPT language=JavaScript1.2>PrintFooter()</SCRIPT>
+<BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR><BR<BR><BR><BR></P></FORM></BASEFONT></BODY></HTML>

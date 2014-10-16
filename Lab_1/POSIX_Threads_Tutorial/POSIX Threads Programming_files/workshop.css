@@ -1,0 +1,21 @@
+BODY {
+	FONT-FAMILY: serif, times; BACKGROUND-COLOR: white
+}
+.heading1 {
+	FONT-WEIGHT: 900; FONT-SIZE: large; COLOR: #dddddd; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.heading2 {
+	FONT-WEIGHT: 900; FONT-SIZE: large; COLOR: slateblue; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.heading3 {
+	FONT-WEIGHT: bold; FONT-STYLE: normal; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.emphasis {
+	FONT-WEIGHT: bold; FONT-STYLE: italic; FONT-FAMILY: serif, times
+}
+.footer {
+	FONT-SIZE: 8pt; FONT-FAMILY: sans-serif, arial, helvetica
+}
+.menu1 {
+	FONT-SIZE: 10pt; FONT-FAMILY: sans-serif, arial, helvetica
+}
