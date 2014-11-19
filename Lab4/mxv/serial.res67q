@@ -1,0 +1,9 @@
+===================== Results for compiler optimized version ==========
+(OMP_NUM_THREADS=1; export OMP_NUM_THREADS ;\
+    SATS_LAB_HEADER=y; export SATS_LAB_HEADER  ;\
+/bin/rm -f perf.dat                        ;\
+for S in 5 10 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100 150 200 250 300  325 350 375 400 500 525 550 575 600 650 675 700 725 750 800 900 950 975 1000 1025  1050 1100 1200 1300 1400 1500 1600 1700 1800 1900 1950 1975 2000 2025 2050 2100  3000 3500 4000 4500 5000 5500 6000                          ;\
+do ./mxv_serial.exe -m $S -n $S                 ;\
+   SATS_LAB_HEADER=n                       ;\
+done                                       ;\
+mv perf.dat serial.dat)

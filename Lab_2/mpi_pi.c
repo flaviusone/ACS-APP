@@ -125,7 +125,7 @@ double dboard(int darts)
 #define sqr(x)	((x)*(x))
 long random(void);
 double x_coord, y_coord, pi, r; 
-int score, n, lost=0;
+int score, n;
 unsigned int cconst;  /* must be 4-bytes in size */
 /*************************************************************************
  * The cconst variable must be 4 bytes. We check this and bail if it is
@@ -151,9 +151,8 @@ if (sizeof(cconst) != 4) {
       /* if dart lands in circle, increment score */
       if ((sqr(x_coord) + sqr(y_coord)) <= 1.0)
            score++;
-      }else
-         lost++;
-// printf("Thread %d lost %d \n",taskid, lost);
+      }
+
 /* calculate pi */
 pi = 4.0 * (double)score/(double)darts;
 return(pi);

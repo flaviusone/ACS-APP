@@ -1,0 +1,12 @@
+pi.c: In function ‘main’:
+pi.c:33:3: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi2.c: In function ‘main’:
+pi2.c:59:3: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi3.c: In function ‘main’:
+pi3.c:58:11: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi3.c:72:4: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi4.c: In function ‘main’:
+pi4.c:65:3: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi5.c: In function ‘main’:
+pi5.c:47:10: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]
+pi5.c:57:4: warning: incompatible implicit declaration of built-in function ‘printf’ [enabled by default]

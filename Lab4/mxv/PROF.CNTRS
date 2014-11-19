@@ -1,0 +1,8 @@
+limit 10
+sort e.cycles
+metrics name:e.insts:e.%+cycles:e.%memstall
+functions
+metrics name:e.dc:e.dcm:e.ecd:e.ecdm::e.dtlbm
+functions
+metrics name:e.%fpmul:e.%fpadd
+functions

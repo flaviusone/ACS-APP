@@ -1,0 +1,4 @@
+# M	N	Memory Footprint	Performance			Execution Time
+#			Row	Column	PerfLib	Row	Column	PerfLib
+#  	 	(KByte)	(Mflop/s)	(Mflop/s)	(Mflop/s)	(seconds)	(seconds)	(seconds)
+ 5000	 5000	  195390.62	     394.7	     141.5	       0.0	     0.57	     1.59	     0.00
