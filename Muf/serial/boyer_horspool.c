@@ -66,16 +66,62 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
     return NULL;
 }
 
-int main(){
-   char haystack[] = "Test abc 123 abc2  bacabc d stuff";
-   char needle[] = "abc";
-   char buffer[50];
-   int hlen = strlen(haystack);
-   // char b[] = "abc";
+int main(int argc, char *argv[]){
+    // char haystack[] = "Test abc 123 abc2  bacabc d stuff abc final";
+    // char* haystack = strdup("Test abc 123 abc2  bacabc d stuff abc final");
 
-   int i=0;
-   while(i < hlen){
-    const char* b = boyermoore_horspool_memmem(haystack + i, hlen, needle, sizeof("abc")-1);
+   /*======================================
+   =            READ FROM FILE            =
+   ======================================*/
+
+    FILE *fp;
+    char input_file[50];
+    char output_file[50];
+    char needle[50];
+    char buffer[50];
+
+
+    fp = fopen(argv[1], "r");
+    fscanf(fp, "%s", input_file);
+    fscanf(fp, "%s", output_file);
+    fscanf(fp, "%s", needle);
+    fclose(fp);
+
+    long lSize;
+    char *haystack;
+
+    fp = fopen ( input_file , "rb" );
+    if( !fp ) perror(input_file),exit(1);
+
+    fseek( fp , 0L , SEEK_END);
+    lSize = ftell( fp );
+    rewind( fp );
+
+    /* allocate memory for entire content */
+    haystack = calloc( 1, lSize+1 );
+    if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
+
+    /* copy the file into the haystack */
+    if( 1!=fread( haystack , lSize, 1 , fp) )
+    fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
+
+    /* do your work here, haystack is a string contains the whole text */
+
+    fclose(fp);
+    // free(haystack);
+
+   /*-----  End of READ FROM FILE  ------*/
+
+    // int hlen = strlen(haystack);
+
+    // printf("%s\n", haystack);
+
+
+
+
+   long i=0;
+   while(i < lSize){
+    const char* b = boyermoore_horspool_memmem(haystack + i, lSize, needle, strlen(needle)-1);
 
     if(b == NULL){
       printf("Null\n");
@@ -87,16 +133,18 @@ int main(){
     while(*(b-counter_start) != ' '){
       counter_start++;
     }
-    while((*(b+counter_end) != ' ') && counter_end < hlen){
+    while((*(b+counter_end) != ' ') && counter_end < lSize){
       counter_end++;
     }
-
+    memset(buffer, 0, sizeof(buffer));
     strncpy(buffer, b - counter_start, counter_start+counter_end);
-    printf("buffer = %s\n", buffer);
+    buffer[counter_start + counter_end] = '\0';
+    printf("%s\n", buffer);
 
-    printf("%s\n", b);
+    // printf("%s\n", b);
 
     i = b - haystack + strlen(needle);
+    printf("%ld - %ld \n", i, lSize);
 
    }
 

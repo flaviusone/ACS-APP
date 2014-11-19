@@ -4,6 +4,10 @@ SERIAL_OUTPUT="build/boyer_horspool"
 echo "Building file..."
 make build-serial
 echo "Running..."
-./$SERIAL_OUTPUT
+
+#Run test 1
+./$SERIAL_OUTPUT inputs/test1
+
+
 echo "Done"
 make clean
