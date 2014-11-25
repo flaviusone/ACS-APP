@@ -111,7 +111,7 @@ int main(int argc, char *argv[]){
 
 
    /*-----  End of READ FROM FILE  ------*/
-    fp = fopen ( output_file , "w+" );
+    fp = fopen ( strcat(output_file, "_H") , "w+" );
     if( !fp ) perror(output_file),exit(1);
 
    long i=0;
