@@ -1,8 +1,10 @@
 #!/bin/bash
+SERIAL_OUTPUT_BM="build/boyer_search"
 SERIAL_OUTPUT_H="build/boyer_horspool"
 SERIAL_OUTPUT_BF="build/bruteforce"
 
 echo "Building files..."
+make build-serial-BM
 make build-serial-BF
 make build-serial-H
 echo "Running tests..."
@@ -33,3 +35,18 @@ time ./$SERIAL_OUTPUT_H inputs/test3
 
 echo "Done"
 make clean
+
+
+
+
+# #Run test 1 - BM
+# echo -e "\nRunning test 1 BM"
+# time ./$SERIAL_OUTPUT_BM inputs/test1
+
+# #Run test 1 - BM
+# echo -e "\nRunning test 1 BM"
+# time ./$SERIAL_OUTPUT_BM inputs/test2
+
+# #Run test 1 - BM
+# echo -e "\nRunning test 1 BM"
+# time ./$SERIAL_OUTPUT_BM inputs/test3
