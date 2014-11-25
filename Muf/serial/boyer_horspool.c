@@ -1,6 +1,7 @@
 #include <string.h>
 #include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 /* Returns a pointer to the first occurrence of "needle"
  * within "haystack", or NULL if not found. Works like
@@ -45,11 +46,11 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
     /* Search the haystack, while the needle can still be within it. */
     while (hlen >= nlen)
     {
+        // printf("Here %ld %ld  \n", hlen, nlen);
         /* scan from the end of the needle */
         for (scan = last; haystack[scan] == needle[scan]; scan = scan - 1)
             if (scan == 0) /* If the first byte matches, we've found it. */
                 return haystack;
-
         /* otherwise, we need to skip some bytes and start again.
            Note that here we are getting the skip value based on the last byte
            of needle, no matter where we didn't match. So if needle is: "abcd"
@@ -77,7 +78,7 @@ int main(int argc, char *argv[]){
     FILE *fp;
     char input_file[50];
     char output_file[50];
-    char needle[50];
+    unsigned char needle[50];
     char buffer[50];
 
 
@@ -88,7 +89,7 @@ int main(int argc, char *argv[]){
     fclose(fp);
 
     long lSize;
-    char *haystack;
+    unsigned char *haystack;
 
     fp = fopen ( input_file , "rb" );
     if( !fp ) perror(input_file),exit(1);
@@ -108,7 +109,7 @@ int main(int argc, char *argv[]){
     /* do your work here, haystack is a string contains the whole text */
 
     fclose(fp);
-    // free(haystack);
+
 
    /*-----  End of READ FROM FILE  ------*/
 
@@ -121,7 +122,8 @@ int main(int argc, char *argv[]){
 
    long i=0;
    while(i < lSize){
-    const char* b = boyermoore_horspool_memmem(haystack + i, lSize, needle, strlen(needle)-1);
+    printf("%ld - %ld \n", i, lSize);
+    unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize, needle, strlen((char*)needle));
 
     if(b == NULL){
       printf("Null\n");
@@ -129,7 +131,7 @@ int main(int argc, char *argv[]){
     }
 
     int counter_start = 1;
-    int counter_end = strlen(needle);
+    int counter_end = strlen((char*) needle);
     while(*(b-counter_start) != ' '){
       counter_start++;
     }
@@ -137,18 +139,17 @@ int main(int argc, char *argv[]){
       counter_end++;
     }
     memset(buffer, 0, sizeof(buffer));
-    strncpy(buffer, b - counter_start, counter_start+counter_end);
+    strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
     buffer[counter_start + counter_end] = '\0';
     printf("%s\n", buffer);
 
     // printf("%s\n", b);
 
-    i = b - haystack + strlen(needle);
-    printf("%ld - %ld \n", i, lSize);
+    i = b - haystack + strlen((char*)needle);
+
 
    }
 
-
-
+   free(haystack);
    return 0;
 }
