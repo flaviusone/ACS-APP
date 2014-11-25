@@ -46,7 +46,6 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
     /* Search the haystack, while the needle can still be within it. */
     while (hlen >= nlen)
     {
-        // printf("Here %ld %ld  \n", hlen, nlen);
         /* scan from the end of the needle */
         for (scan = last; haystack[scan] == needle[scan]; scan = scan - 1)
             if (scan == 0) /* If the first byte matches, we've found it. */
@@ -60,8 +59,8 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
            the last character is slower in the normal case (E.g. finding
            "abcd" in "...azcd..." gives 4 by using 'd' but only
            4-2==2 using 'z'. */
-        hlen     -= bad_char_skip[haystack[last]];
-        haystack += bad_char_skip[haystack[last]];
+        hlen     -= bad_char_skip[haystack[scan]];
+        haystack += bad_char_skip[haystack[scan]];
     }
 
     return NULL;
@@ -112,21 +111,15 @@ int main(int argc, char *argv[]){
 
 
    /*-----  End of READ FROM FILE  ------*/
-
-    // int hlen = strlen(haystack);
-
-    // printf("%s\n", haystack);
-
-
-
+    fp = fopen ( output_file , "w+" );
+    if( !fp ) perror(output_file),exit(1);
 
    long i=0;
    while(i < lSize){
-    printf("%ld - %ld \n", i, lSize);
-    unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize, needle, strlen((char*)needle));
+    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
 
     if(b == NULL){
-      printf("Null\n");
+      fprintf(fp, "EOF\n");
       return -1;
     }
 
@@ -141,15 +134,12 @@ int main(int argc, char *argv[]){
     memset(buffer, 0, sizeof(buffer));
     strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
     buffer[counter_start + counter_end] = '\0';
-    printf("%s\n", buffer);
-
-    // printf("%s\n", b);
+    fprintf(fp, "%s\n", buffer);
 
     i = b - haystack + strlen((char*)needle);
 
-
    }
-
+   fclose(fp);
    free(haystack);
    return 0;
 }
