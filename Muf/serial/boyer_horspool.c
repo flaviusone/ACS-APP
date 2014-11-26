@@ -2,6 +2,8 @@
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <time.h>
 
 /* Returns a pointer to the first occurrence of "needle"
  * within "haystack", or NULL if not found. Works like
@@ -79,6 +81,8 @@ int main(int argc, char *argv[]){
     char output_file[50];
     unsigned char needle[50];
     char buffer[50];
+    struct timeval start,finish;
+    double t;
 
 
     fp = fopen(argv[1], "r");
@@ -109,10 +113,11 @@ int main(int argc, char *argv[]){
 
     fclose(fp);
 
-
    /*-----  End of READ FROM FILE  ------*/
     fp = fopen ( strcat(output_file, "_H") , "w+" );
     if( !fp ) perror(output_file),exit(1);
+
+   gettimeofday(&start,0);
 
    long i=0;
    while(i < lSize){
@@ -120,7 +125,7 @@ int main(int argc, char *argv[]){
 
     if(b == NULL){
       fprintf(fp, "EOF\n");
-      return -1;
+      break;
     }
 
     int counter_start = 1;
@@ -137,9 +142,18 @@ int main(int argc, char *argv[]){
     fprintf(fp, "%s\n", buffer);
 
     i = b - haystack + strlen((char*)needle);
-
    }
    fclose(fp);
    free(haystack);
+
+
+  gettimeofday(&finish,0);
+
+  t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
+   / 1000000.0;
+  printf("Time elapsed %lf\n", t);
+
+
+
    return 0;
 }
