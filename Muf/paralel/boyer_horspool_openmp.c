@@ -121,6 +121,8 @@ int main(int argc, char *argv[]){
    gettimeofday(&start,0);
 
    long i=0;
+
+   #pragma omp parallel private(i)
    while(i < lSize){
     const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
 
@@ -144,6 +146,8 @@ int main(int argc, char *argv[]){
 
     i = b - haystack + strlen((char*)needle);
    }
+   #pragma omp barrier
+
    fclose(fp);
    free(haystack);
 
