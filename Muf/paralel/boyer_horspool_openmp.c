@@ -117,16 +117,11 @@ int main(int argc, char *argv[]){
   gettimeofday(&start,0);
 
 
-  /* Aici se pune pragma */
+  /* TODO - Aici se pune pragma */
   for (j = 0; j < lSize ; j+=CHUNKSIZE)
   {
 
     i = j;
-
-    /* Incercam sa sarim peste primul cuvant */
-    // while(*(haystack+i) != ' '){
-    //     i++;
-    // }
 
     printf("i=%ld J+chunksize=%ld\n", i, j+CHUNKSIZE);
 
@@ -135,11 +130,20 @@ int main(int argc, char *argv[]){
       /* Cautam urmatoarea aparitie a secventei de cautat */
       const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
 
+
+      /* TODO - ar trebui sa trimitem j+CHUNKSIZE in functia
+      boyermoore_horspool_memmem ca sa putem da break cand depasim
+        si nu abea dupa ce a parcurs bucata cum e acum mai jos*/
+
       /* Am depasit CHUNK-ul */
       if((b - haystack) > j+CHUNKSIZE){
         printf("Break din while\n");
         break;
       }
+
+
+      /* TODO - aici trebuie sa dam break si din
+       for odata ce se ajunge la EOF */
 
       /* Daca b null atunci am terminat */
       if(b == NULL){
