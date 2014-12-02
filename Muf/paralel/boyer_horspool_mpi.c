@@ -127,7 +127,7 @@ int main(int argc, char *argv[]){
     fclose(fp);
 
     /* Deschidem fisier de output */
-    fp = fopen ( strcat(output_file, "_H") , "w+" );
+    fp = fopen ( strcat(output_file, "_H_MPI") , "w+" );
     if( !fp ) perror(output_file),exit(1);
 
     /* Calculam chunksize pentru procesare */
@@ -161,10 +161,7 @@ int main(int argc, char *argv[]){
     const unsigned char*  b = boyermoore_horspool_memmem(chunk_haystack + i, chunksize - i, needle, strlen((char*)needle));
 
     // /* Daca b null atunci am terminat */
-    if(b == NULL){
-      // fprintf(fp, "EOF\n");
-      break;
-    }
+    if(b == NULL) break;
 
     /* Setam capetele de cautare */
     int counter_start = 1;
@@ -197,10 +194,9 @@ int main(int argc, char *argv[]){
 
     i = b - chunk_haystack + strlen((char*)needle);
   }
-  // printf("Rank %d -> %s\n", out_buff);
 
   /* Calculam valoarea strlen de out_buff */
-  int strlen_val = (int)strlen(out_buff);
+  int strlen_val = (int)strlen(out_buff)+1;
 
   /* Toata lumea trimite valoarea lui strlen(out_buff) la master */
   MPI_Gather(&strlen_val, 1, MPI_INT, strlens, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -234,7 +230,8 @@ int main(int argc, char *argv[]){
       free(aux_buffer);
     }
 
-    printf("%s\n", final_buff);
+    // printf("%s\n", final_buff);
+    fprintf(fp, "%s",final_buff);
 
     /* Stop la numarare timp */
     gettimeofday(&finish,0);
