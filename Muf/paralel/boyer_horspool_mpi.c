@@ -84,7 +84,7 @@ int main(int argc, char *argv[]){
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack;        /* Buffer ce contine fisierul in care se cauta */
   long i=0;                       /* Aux */
-  long chunksize;                 /* Lungime chunk haystack */
+  int chunksize;                 /* Lungime chunk haystack */
   unsigned char *chunk_haystack;  /* Buffer ce contine un chunk din fisierul in care se cauta */
   int rc, numtasks, rank;  /* Aux (MPI) */
   /*-----  End of Initializare variabile  ------*/
@@ -143,24 +143,20 @@ int main(int argc, char *argv[]){
   /* Alocam chunk_haystack */
   chunk_haystack = (unsigned char*)malloc(chunksize*sizeof(unsigned char));
 
-  MPI_Barrier(MPI_COMM_WORLD);
-
-  if(chunk_haystack==NULL){
-    printf("CE CACAT %d\n", chunksize);
-  }
-
   /* Facem scatter la haystack initial catre toate procesele */
   MPI_Scatter(haystack, chunksize, MPI_UNSIGNED_CHAR, chunk_haystack, chunksize, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
 
-  i = rank*chunksize;
-  while(i < (rank*chunksize+chunksize)){
+  // MPI_Barrier(MPI_COMM_WORLD);
+
+  i = 0;
+  while(i < chunksize){
 
     /* Cautam urmatoarea aparitie a secventei de cautat */
     const unsigned char*  b = boyermoore_horspool_memmem(chunk_haystack + i, chunksize - i, needle, strlen((char*)needle));
 
-    /* Daca b null atunci am terminat */
+    // /* Daca b null atunci am terminat */
     if(b == NULL){
-      fprintf(fp, "EOF\n");
+      // fprintf(fp, "EOF\n");
       break;
     }
 
@@ -184,9 +180,9 @@ int main(int argc, char *argv[]){
 
     /* Scriem cuvantul in fisier */
     // fprintf(fp, "%s\n", buffer);
-    printf("%s \n",buffer);
+    printf("rank %d -> %s \n", rank, buffer);
 
-    i = b - haystack + strlen((char*)needle);
+    i = b - chunk_haystack + strlen((char*)needle);
   }
 
   MPI_Barrier(MPI_COMM_WORLD);
