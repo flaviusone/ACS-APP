@@ -125,7 +125,7 @@ int main(int argc, char *argv[]){
 
     int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
     int j;
-    fpo = fopen ( strcat(output_file, "_H") , "a+" );
+    fpo = fopen ( strcat(output_file, "_H") , "w+" );
     if( !fpo ) perror(output_file),exit(1);
     for (j = 0; j < chunks; j++) {
       /* allocate memory for entire content */
@@ -133,24 +133,26 @@ int main(int argc, char *argv[]){
 
       /* copy the file into the haystack */
       fseek(fp, j * CHUNKSIZE, SEEK_SET);
-      size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+      // size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+      size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE, fp);
 
-      int delay, final;
-      delay = first(haystack);
-      final = last(haystack, dim);
+      // int delay, final;
+      // delay = first(haystack);
+      // final = last(haystack, dim);
 
-      hay = calloc(final - delay, sizeof(unsigned char));
-      strncpy((char*)hay, (char*)haystack, final - delay);
+      // hay = calloc(final - delay, sizeof(unsigned char));
+      // strncpy((char*)hay, (char*)haystack, final - delay);
 
-      int size = final - delay;
-      if (size > 0) {
+      // int size = final - delay;
+      // if (size > 0) {
+      if (dim > 0) {
         gettimeofday(&start,0);
 
          long i = 0;
 
          // #pragma omp parallel private(i)
-         while(i < size){
-          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
+         while(i < CHUNKSIZE){ //i < size; dim -> size
+          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dim - i, needle, strlen((char*)needle));
 
           if(b == NULL){
             fprintf(fpo, "EOF\n");
@@ -162,7 +164,7 @@ int main(int argc, char *argv[]){
           while(*(b-counter_start) != ' '){
             counter_start++;
           }
-          while((*(b+counter_end) != ' ') && counter_end < size){
+          while((*(b+counter_end) != ' ') && counter_end < dim){
             counter_end++;
           }
           memset(buffer, 0, sizeof(buffer));
