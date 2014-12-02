@@ -86,7 +86,10 @@ int main(int argc, char *argv[]){
   long i=0;                       /* Aux */
   int chunksize;                 /* Lungime chunk haystack */
   unsigned char *chunk_haystack;  /* Buffer ce contine un chunk din fisierul in care se cauta */
+  char *out_buff=NULL;
+  char *final_buff=NULL;
   int rc, numtasks, rank;  /* Aux (MPI) */
+  int *strlens;
   /*-----  End of Initializare variabile  ------*/
 
   /*==========  MPI Inits  ==========*/
@@ -124,11 +127,14 @@ int main(int argc, char *argv[]){
     fclose(fp);
 
     /* Deschidem fisier de output */
-    fp = fopen ( strcat(output_file, "_H") , "w+" );
+    fp = fopen ( strcat(output_file, "_H_MPI") , "w+" );
     if( !fp ) perror(output_file),exit(1);
 
     /* Calculam chunksize pentru procesare */
     chunksize = lSize / numtasks;
+
+    /* Alocam Strlens vector */
+    strlens = malloc(numtasks*sizeof(int));
 
     /* Start la numarare timp */
     gettimeofday(&start,0);
@@ -147,7 +153,7 @@ int main(int argc, char *argv[]){
   MPI_Scatter(haystack, chunksize, MPI_UNSIGNED_CHAR, chunk_haystack, chunksize, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
 
   // MPI_Barrier(MPI_COMM_WORLD);
-
+  out_buff=malloc(sizeof(char));
   i = 0;
   while(i < chunksize){
 
@@ -155,10 +161,7 @@ int main(int argc, char *argv[]){
     const unsigned char*  b = boyermoore_horspool_memmem(chunk_haystack + i, chunksize - i, needle, strlen((char*)needle));
 
     // /* Daca b null atunci am terminat */
-    if(b == NULL){
-      // fprintf(fp, "EOF\n");
-      break;
-    }
+    if(b == NULL) break;
 
     /* Setam capetele de cautare */
     int counter_start = 1;
@@ -176,18 +179,60 @@ int main(int argc, char *argv[]){
     /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
     memset(buffer, 0, sizeof(buffer));
     strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-    buffer[counter_start + counter_end] = '\0';
+    buffer[counter_start + counter_end] = '\n';
+    buffer[counter_start + counter_end+1] = '\0';
 
     /* Scriem cuvantul in fisier */
     // fprintf(fp, "%s\n", buffer);
-    printf("rank %d -> %s \n", rank, buffer);
+
+    out_buff = realloc(out_buff, strlen(out_buff) + strlen(buffer) + sizeof(char));
+    if (!out_buff){
+       printf("Error Realloc\n");
+      return -1;
+    }
+    strcat(out_buff, buffer);
 
     i = b - chunk_haystack + strlen((char*)needle);
   }
 
-  MPI_Barrier(MPI_COMM_WORLD);
+  /* Calculam valoarea strlen de out_buff */
+  int strlen_val = (int)strlen(out_buff)+1;
+
+  /* Toata lumea trimite valoarea lui strlen(out_buff) la master */
+  MPI_Gather(&strlen_val, 1, MPI_INT, strlens, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  /* Fiecare rank trimite catre rank 0 out_buff */
+  if( rank != 0){
+    MPI_Send(out_buff, strlen_val, MPI_CHAR, 0, 0, MPI_COMM_WORLD);
+  }
+
   if(rank == 0)
   {
+
+    /* Calculez suma la strlen-uri si aloc final_buff */
+    int sum = 0;
+    for (i = 0; i < numtasks; ++i)
+    {
+      sum += *(strlens+i);
+    }
+    final_buff = malloc(sum*sizeof(char));
+
+    /* Pun intai bucata mea in final_buff */
+    sprintf(final_buff, "%s", out_buff);
+
+
+    /* Fac recieve de la toate celelalte taskuri la out_buff */
+    for (i = 1; i < numtasks; ++i)
+    {
+      char* aux_buffer = malloc(strlens[i]*sizeof(char));
+      MPI_Recv(aux_buffer, strlens[i], MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      strcat(final_buff, aux_buffer);
+      free(aux_buffer);
+    }
+
+    // printf("%s\n", final_buff);
+    fprintf(fp, "%s",final_buff);
+
     /* Stop la numarare timp */
     gettimeofday(&finish,0);
 
