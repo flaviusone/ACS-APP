@@ -29,7 +29,7 @@ build-serial-BF:
 	$(CC) $(CFLAGS) $(SERIAL_PATH_BF) -o $(SERIAL_OUTPUT_BF)
 
 build-parallel-H-OpenMP:
-	$(CC) $(CFLAGS) -fopenmp $(PARALLEL_PATH_H_OPENMP) -o $(PARALLEL_OUTPUT_H_OPENMP)
+	$(CC) $(CFLAGS) -fopenmp -g $(PARALLEL_PATH_H_OPENMP) -o $(PARALLEL_OUTPUT_H_OPENMP)
 
 build-mpi:
 	$(MPICC) $(CFLAGS) $(PARALLEL_PATH_H_MPI) -o $(PARALLEL_OUTPUT_H_MPI)
