@@ -17,7 +17,7 @@ PARALLEL_OUTPUT_H_OPENMP = build/horspool_openmp
 PARALLEL_PATH_H_MPI = paralel/boyer_horspool_mpi.c
 PARALLEL_OUTPUT_H_MPI = build/horspool_mpi
 
-all: clean build-serial-BM build-serial-H build-serial-BF build-parallel-H-OpenMP build-serial-BM
+all: build-serial-BM build-serial-H build-serial-BF build-parallel-H-OpenMP build-mpi
 
 build-serial-BM:
 	$(CC) $(CFLAGS) $(SERIAL_PATH_BM) -o $(SERIAL_OUTPUT_BM)
