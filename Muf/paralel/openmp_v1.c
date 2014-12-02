@@ -135,7 +135,7 @@ int main(int argc, char *argv[]){
       fseek(fp, j * CHUNKSIZE, SEEK_SET);
       // size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
       size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE, fp);
-
+      int dimi = (int)dim;
       // int delay, final;
       // delay = first(haystack);
       // final = last(haystack, dim);
@@ -145,14 +145,14 @@ int main(int argc, char *argv[]){
 
       // int size = final - delay;
       // if (size > 0) {
-      if (dim > 0) {
+      if (dimi > 0) {
         gettimeofday(&start,0);
 
          long i = 0;
 
          // #pragma omp parallel private(i)
          while(i < CHUNKSIZE){ //i < size; dim -> size
-          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dim - i, needle, strlen((char*)needle));
+          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dimi - i, needle, strlen((char*)needle));
 
           if(b == NULL){
             fprintf(fpo, "EOF\n");
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
           while(*(b-counter_start) != ' '){
             counter_start++;
           }
-          while((*(b+counter_end) != ' ') && counter_end < dim){
+          while((*(b+counter_end) != ' ') && counter_end < dimi){
             counter_end++;
           }
           memset(buffer, 0, sizeof(buffer));
@@ -182,6 +182,7 @@ int main(int argc, char *argv[]){
          timp_total += t;
          // #pragma omp barrier
       }
+      free(haystack);
     }
 
 
@@ -196,7 +197,7 @@ int main(int argc, char *argv[]){
 
 
    fclose(fpo);
-   free(haystack);
+   // free(haystack);
 
 
   printf("Time elapsed %lf\n", timp_total);
