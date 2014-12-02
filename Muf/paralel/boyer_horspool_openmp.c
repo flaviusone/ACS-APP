@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
-#include <omp.h>
 
+#define CHUNKSIZE 10000
 /* Returns a pointer to the first occurrence of "needle"
  * within "haystack", or NULL if not found. Works like
  * memmem().
@@ -70,95 +70,121 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
 }
 
 int main(int argc, char *argv[]){
-    // char haystack[] = "Test abc 123 abc2  bacabc d stuff abc final";
-    // char* haystack = strdup("Test abc 123 abc2  bacabc d stuff abc final");
 
-   /*======================================
-   =            READ FROM FILE            =
-   ======================================*/
+  /*==============================================
+  =            Initializare variabile            =
+  ==============================================*/
+  FILE *fp;
+  char input_file[50];            /* Input file */
+  char output_file[50];           /* Output file */
+  unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
+  char buffer[50];                /* Buffer auxiliar */
+  struct timeval start,finish;    /* Pentru calcul timp */
+  double t;                       /* Pentru calcul timp */
+  long lSize;                     /* Lungime haystack */
+  unsigned char *haystack;        /* Buffer ce contine fisierul in care se cauta */
+  long i=0,j;                     /* Aux */
+  /*-----  End of Initializare variabile  ------*/
 
-    FILE *fp;
-    char input_file[50];
-    char output_file[50];
-    unsigned char needle[50];
-    char buffer[50];
-    struct timeval start,finish;
-    double t;
+  /*  Citire date test din fisier  */
+  fp = fopen(argv[1], "r");
+  fscanf(fp, "%s", input_file);
+  fscanf(fp, "%s", output_file);
+  fscanf(fp, "%s", needle);
+  fclose(fp);
+
+  /* Deschidem fisierul pentru a-i afla dimensiunea */
+  fp = fopen ( input_file , "rb" );
+  if( !fp ) perror(input_file),exit(1);
+  fseek( fp , 0L , SEEK_END);
+  lSize = ftell( fp );
+  rewind( fp );
+
+  /* Alocam memorie pentru haystack (de dimensiunea fisierului) */
+  haystack = calloc( 1, lSize+1 );
+  if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
+
+  /* Copiem fisierul in haystack */
+  if( 1!=fread( haystack , lSize, 1 , fp) )
+  fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
+  fclose(fp);
+
+  /* Deschidem fisier de output */
+  fp = fopen ( strcat(output_file, "_H_OMP") , "w+" );
+  if( !fp ) perror(output_file),exit(1);
+
+  /* Start la numarare timp */
+  gettimeofday(&start,0);
 
 
-    fp = fopen(argv[1], "r");
-    fscanf(fp, "%s", input_file);
-    fscanf(fp, "%s", output_file);
-    fscanf(fp, "%s", needle);
-    fclose(fp);
+  /* Aici se pune pragma */
+  for (j = 0; j < lSize ; j+=CHUNKSIZE)
+  {
 
-    long lSize;
-    unsigned char *haystack;
+    i = j;
 
-    fp = fopen ( input_file , "rb" );
-    if( !fp ) perror(input_file),exit(1);
+    /* Incercam sa sarim peste primul cuvant */
+    // while(*(haystack+i) != ' '){
+    //     i++;
+    // }
 
-    fseek( fp , 0L , SEEK_END);
-    lSize = ftell( fp );
-    rewind( fp );
+    printf("i=%ld J+chunksize=%ld\n", i, j+CHUNKSIZE);
 
-    /* allocate memory for entire content */
-    haystack = calloc( 1, lSize+1 );
-    if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
+    while(i < j+CHUNKSIZE){
 
-    /* copy the file into the haystack */
-    if( 1!=fread( haystack , lSize, 1 , fp) )
-    fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
+      /* Cautam urmatoarea aparitie a secventei de cautat */
+      const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
 
-    /* do your work here, haystack is a string contains the whole text */
+      /* Am depasit CHUNK-ul */
+      if((b - haystack) > j+CHUNKSIZE){
+        printf("Break din while\n");
+        break;
+      }
 
-    fclose(fp);
+      /* Daca b null atunci am terminat */
+      if(b == NULL){
+        fprintf(fp, "EOF\n");
+        break;
+      }
 
-   /*-----  End of READ FROM FILE  ------*/
-    fp = fopen ( strcat(output_file, "_H") , "w+" );
-    if( !fp ) perror(output_file),exit(1);
+      /* Setam capetele de cautare */
+      int counter_start = 1;
+      int counter_end = strlen((char*) needle);
 
-   gettimeofday(&start,0);
+      /* Cautam de la cuvant in spate pana la space */
+      while(*(b-counter_start) != ' '){
+        counter_start++;
+      }
+      /* Cautam de la cuvant in fata pana la space */
+      while((*(b+counter_end) != ' ') && counter_end < lSize){
+        counter_end++;
+      }
 
-   long i=0;
+      /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
+      memset(buffer, 0, sizeof(buffer));
+      strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
+      buffer[counter_start + counter_end] = '\0';
 
-   #pragma omp parallel private(i)
-   while(i < lSize){
-    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
+      /* Scriem cuvantul in fisier */
+      fprintf(fp, "%s\n", buffer);
 
-    if(b == NULL){
-      fprintf(fp, "EOF\n");
-      break;
+      i = b - haystack + strlen((char*)needle);
+      printf("i=%ld\n", i);
     }
+    printf("I la final %ld\n",i);
+  }
 
-    int counter_start = 1;
-    int counter_end = strlen((char*) needle);
-    while(*(b-counter_start) != ' '){
-      counter_start++;
-    }
-    while((*(b+counter_end) != ' ') && counter_end < lSize){
-      counter_end++;
-    }
-    memset(buffer, 0, sizeof(buffer));
-    strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-    buffer[counter_start + counter_end] = '\0';
-    fprintf(fp, "%s\n", buffer);
-
-    i = b - haystack + strlen((char*)needle);
-   }
-   #pragma omp barrier
-
-   fclose(fp);
-   free(haystack);
-
-
+  /* Stop la numarare timp */
   gettimeofday(&finish,0);
 
+  /* Calcul timp desfasurare */
   t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
    / 1000000.0;
   printf("Time elapsed %lf\n", t);
 
+  /* Cleanups */
+  fclose(fp);
+  free(haystack);
 
-
-   return 0;
+  return 0;
 }
