@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
+#include "mpi.h"
 
 /* Returns a pointer to the first occurrence of "needle"
  * within "haystack", or NULL if not found. Works like
@@ -83,43 +84,79 @@ int main(int argc, char *argv[]){
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack;        /* Buffer ce contine fisierul in care se cauta */
   long i=0;                       /* Aux */
+  long chunksize;                 /* Lungime chunk haystack */
+  unsigned char *chunk_haystack;  /* Buffer ce contine un chunk din fisierul in care se cauta */
+  int rc, numtasks, rank;  /* Aux (MPI) */
   /*-----  End of Initializare variabile  ------*/
 
-  /*  Citire date test din fisier  */
-  fp = fopen(argv[1], "r");
-  fscanf(fp, "%s", input_file);
-  fscanf(fp, "%s", output_file);
-  fscanf(fp, "%s", needle);
-  fclose(fp);
+  /*==========  MPI Inits  ==========*/
+  rc = MPI_Init(NULL, NULL);
+  if (rc != MPI_SUCCESS) {
+      printf ("Error starting MPI program. Terminating.\n");
+      MPI_Abort(MPI_COMM_WORLD, rc);
+  }
+  MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  /* Deschidem fisierul pentru a-i afla dimensiunea */
-  fp = fopen ( input_file , "rb" );
-  if( !fp ) perror(input_file),exit(1);
-  fseek( fp , 0L , SEEK_END);
-  lSize = ftell( fp );
-  rewind( fp );
+  if(rank == 0)
+  {
+    /*  Citire date test din fisier  */
+    fp = fopen(argv[1], "r");
+    fscanf(fp, "%s", input_file);
+    fscanf(fp, "%s", output_file);
+    fscanf(fp, "%s", needle);
+    fclose(fp);
 
-  /* Alocam memorie pentru haystack (de dimensiunea fisierului) */
-  haystack = calloc( 1, lSize+1 );
-  if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
+    /* Deschidem fisierul pentru a-i afla dimensiunea */
+    fp = fopen ( input_file , "rb" );
+    if( !fp ) perror(input_file),exit(1);
+    fseek( fp , 0L , SEEK_END);
+    lSize = ftell( fp );
+    rewind( fp );
 
-  /* Copiem fisierul in haystack */
-  if( 1!=fread( haystack , lSize, 1 , fp) )
-  fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
-  fclose(fp);
+    /* Alocam memorie pentru haystack (de dimensiunea fisierului) */
+    haystack = calloc( 1, lSize+1 );
+    if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
 
-  /* Deschidem fisier de output */
-  fp = fopen ( strcat(output_file, "_H") , "w+" );
-  if( !fp ) perror(output_file),exit(1);
+    /* Copiem fisierul in haystack */
+    if( 1!=fread( haystack , lSize, 1 , fp) )
+    fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
+    fclose(fp);
 
-  /* Start la numarare timp */
-  gettimeofday(&start,0);
+    /* Deschidem fisier de output */
+    fp = fopen ( strcat(output_file, "_H") , "w+" );
+    if( !fp ) perror(output_file),exit(1);
 
+    /* Calculam chunksize pentru procesare */
+    chunksize = lSize / numtasks;
 
-  while(i < lSize){
+    /* Start la numarare timp */
+    gettimeofday(&start,0);
+  }
+
+  /* Trimitem chunksize calculat catre toate nodurile */
+  MPI_Bcast(&chunksize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  /* Trimitem needle la toata lumea */
+  MPI_Bcast(needle, 50, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
+
+  /* Alocam chunk_haystack */
+  chunk_haystack = (unsigned char*)malloc(chunksize*sizeof(unsigned char));
+
+  MPI_Barrier(MPI_COMM_WORLD);
+
+  if(chunk_haystack==NULL){
+    printf("CE CACAT %d\n", chunksize);
+  }
+
+  /* Facem scatter la haystack initial catre toate procesele */
+  MPI_Scatter(haystack, chunksize, MPI_UNSIGNED_CHAR, chunk_haystack, chunksize, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
+
+  i = rank*chunksize;
+  while(i < (rank*chunksize+chunksize)){
 
     /* Cautam urmatoarea aparitie a secventei de cautat */
-    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
+    const unsigned char*  b = boyermoore_horspool_memmem(chunk_haystack + i, chunksize - i, needle, strlen((char*)needle));
 
     /* Daca b null atunci am terminat */
     if(b == NULL){
@@ -146,22 +183,28 @@ int main(int argc, char *argv[]){
     buffer[counter_start + counter_end] = '\0';
 
     /* Scriem cuvantul in fisier */
-    fprintf(fp, "%s\n", buffer);
+    // fprintf(fp, "%s\n", buffer);
+    printf("%s \n",buffer);
 
     i = b - haystack + strlen((char*)needle);
   }
 
-  /* Stop la numarare timp */
-  gettimeofday(&finish,0);
+  MPI_Barrier(MPI_COMM_WORLD);
+  if(rank == 0)
+  {
+    /* Stop la numarare timp */
+    gettimeofday(&finish,0);
 
-  /* Calcul timp desfasurare */
-  t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
-   / 1000000.0;
-  printf("Time elapsed %lf\n", t);
+    /* Calcul timp desfasurare */
+    t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
+     / 1000000.0;
+    printf("Time elapsed %lf\n", t);
 
-  /* Cleanups */
-  fclose(fp);
-  free(haystack);
+    /* Cleanups */
+    fclose(fp);
+    free(haystack);
+  }
 
+  MPI_Finalize();
   return 0;
 }
