@@ -151,7 +151,7 @@ int main(int argc, char *argv[]){
          long i = 0;
 
          // #pragma omp parallel private(i)
-         while(i < CHUNKSIZE){ //i < size; dim -> size
+         while(i < dimi){ //i < size; dim -> size
           const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dimi - i, needle, strlen((char*)needle));
 
           if(b == NULL){
@@ -164,13 +164,14 @@ int main(int argc, char *argv[]){
           while(*(b-counter_start) != ' '){
             counter_start++;
           }
-          while((*(b+counter_end) != ' ') && counter_end < dimi){
+          while((*(b+counter_end) != ' ') && b-haystack+counter_end < dimi){
             counter_end++;
           }
           memset(buffer, 0, sizeof(buffer));
           strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
           buffer[counter_start + counter_end] = '\0';
-          fprintf(fpo, "%s\n", buffer);
+          // fprintf(fpo, "%s\n", buffer);
+          printf("%s \n", buffer);
 
           i = b - haystack + strlen((char*)needle);
          }
