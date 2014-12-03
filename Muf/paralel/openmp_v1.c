@@ -144,7 +144,7 @@ int main(int argc, char *argv[]){
       final = last(haystack, dimi);
 
       hay = calloc(final - delay, sizeof(unsigned char));
-      strncpy((char*)hay, (char*)haystack, final - delay);
+      strncpy((char*)hay, (char*)haystack+delay, final - delay);
       free(haystack);
       haystack = hay;
 
