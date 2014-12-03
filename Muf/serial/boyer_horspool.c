@@ -123,7 +123,7 @@ int main(int argc, char *argv[]){
 
     /* Daca b null atunci am terminat */
     if(b == NULL){
-      fprintf(fp, "EOF\n");
+      // fprintf(fp, "EOF\n");
       break;
     }
 

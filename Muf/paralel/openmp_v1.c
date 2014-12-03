@@ -125,7 +125,7 @@ int main(int argc, char *argv[]){
 
     int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
     int j;
-    fpo = fopen ( strcat(output_file, "_H") , "w+" );
+    fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
     if( !fpo ) perror(output_file),exit(1);
     for (j = 0; j < chunks; j++) {
       /* allocate memory for entire content */
@@ -155,7 +155,6 @@ int main(int argc, char *argv[]){
           const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dimi - i, needle, strlen((char*)needle));
 
           if(b == NULL){
-            fprintf(fpo, "EOF\n");
             break;
           }
 
@@ -170,8 +169,7 @@ int main(int argc, char *argv[]){
           memset(buffer, 0, sizeof(buffer));
           strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
           buffer[counter_start + counter_end] = '\0';
-          // fprintf(fpo, "%s\n", buffer);
-          printf("%s \n", buffer);
+          fprintf(fpo, "%s\n", buffer);
 
           i = b - haystack + strlen((char*)needle);
          }
