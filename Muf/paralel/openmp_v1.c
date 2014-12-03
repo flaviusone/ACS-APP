@@ -72,9 +72,10 @@ boyermoore_horspool_memmem(const unsigned char* haystack, size_t hlen,
     return NULL;
 }
 
-int first (unsigned char * haystack) {
+int first (unsigned char * haystack, int chunk_size) {
   int delay = 0;
-  while ((char)haystack[delay] != " ")
+  // while ((char)haystack[delay] != ' ' && (delay<chunk_size))
+  while ((char)haystack[delay] != ' ')
     delay++;
   return delay;
 }
@@ -83,7 +84,8 @@ int last (unsigned char * haystack, int dim) {
   int final = CHUNKSIZE;
   if (dim <= CHUNKSIZE)
     return dim;
-  while ((char)haystack[final] != " ")
+  // while ((char)haystack[final] != ' ' && (final<=dim))
+  while ((char)haystack[final] != ' ')
     final++;
   return final;
 }
@@ -133,26 +135,28 @@ int main(int argc, char *argv[]){
 
       /* copy the file into the haystack */
       fseek(fp, j * CHUNKSIZE, SEEK_SET);
-      // size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
-      size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE, fp);
+      size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+      // size_t dim = fread(haystack, sizeof(unsigned char), CHUNKSIZE, fp);
+
       int dimi = (int)dim;
-      // int delay, final;
-      // delay = first(haystack);
-      // final = last(haystack, dim);
+      int delay, final;
+      delay = first(haystack, CHUNKSIZE+200);
+      final = last(haystack, dimi);
 
-      // hay = calloc(final - delay, sizeof(unsigned char));
-      // strncpy((char*)hay, (char*)haystack, final - delay);
+      hay = calloc(final - delay, sizeof(unsigned char));
+      strncpy((char*)hay, (char*)haystack, final - delay);
+      free(haystack);
+      haystack = hay;
 
-      // int size = final - delay;
-      // if (size > 0) {
-      if (dimi > 0) {
+      int size = final - delay;
+      if (size > 0) {
         gettimeofday(&start,0);
 
          long i = 0;
 
          // #pragma omp parallel private(i)
-         while(i < dimi){ //i < size; dim -> size
-          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, dimi - i, needle, strlen((char*)needle));
+         while(i < size){ //i < size; dim -> size
+          const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
 
           if(b == NULL){
             break;
@@ -163,7 +167,7 @@ int main(int argc, char *argv[]){
           while(*(b-counter_start) != ' '){
             counter_start++;
           }
-          while((*(b+counter_end) != ' ') && b-haystack+counter_end < dimi){
+          while((*(b+counter_end) != ' ') && b-haystack+counter_end < size){
             counter_end++;
           }
           memset(buffer, 0, sizeof(buffer));
