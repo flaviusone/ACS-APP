@@ -129,6 +129,7 @@ int main(int argc, char *argv[]){
     int j;
     fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
     if( !fpo ) perror(output_file),exit(1);
+    #pragma omp parallel for private(j, haystack, hay, needle)
     for (j = 0; j < chunks; j++) {
       /* allocate memory for entire content */
       haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));

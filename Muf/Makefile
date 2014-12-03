@@ -1,38 +1,73 @@
+#######################################
+# APP 2014
+# Team Muf
+# Irina Gosu & Flavius Tirnacop 341C1
+#######################################
 CC=gcc
 MPICC=mpicc
 CFLAGS = -Wall
 
-SERIAL_PATH_BM = serial/boyer_search.c
-SERIAL_OUTPUT_BM = build/boyer_search
-
-SERIAL_PATH_H = serial/boyer_horspool.c
+#######################################
+# Varianta seriala cu Horspool
+SERIAL_PATH_H = src/boyer_horspool.c
 SERIAL_OUTPUT_H = build/boyer_horspool
 
-SERIAL_PATH_BF = serial/bruteforce.c
+# Varianta OMP cu Horspool
+OMP_PATH_H = src/boyer_horspool_omp.c
+OMP_OUTPUT_H = build/horspool_OMP
+
+# Varianta MPI cu Horspool
+MPI_PATH_H = src/boyer_horspool_mpi.c
+MPI_OUTPUT_H = build/horspool_mpi
+
+# Varianta PTHREADS cu Horspool
+PTHREADS_PATH_H = src/boyer_horspool_pthreads.c
+PTHREADS_OUTPUT_H = build/boyer_horspool_pthreads
+#######################################
+# Varianta seriala cu Bruteforce
+SERIAL_PATH_BF = src/bruteforce.c
 SERIAL_OUTPUT_BF = build/bruteforce
 
-PARALLEL_PATH_H_OPENMP = paralel/openmp_v1.c
-PARALLEL_OUTPUT_H_OPENMP = build/horspool_openmp
+# Varianta OMP cu Horspool
+OMP_PATH_BF = src/bruteforce_omp.c
+OMP_OUTPUT_BF = build/bruteforce_OMP
 
-PARALLEL_PATH_H_MPI = paralel/boyer_horspool_mpi.c
-PARALLEL_OUTPUT_H_MPI = build/horspool_mpi
+# Varianta MPI cu Horspool
+MPI_PATH_BF = src/bruteforce_mpi.c
+MPI_OUTPUT_BF = build/bruteforce_mpi
 
-all: build-serial-BM build-serial-H build-serial-BF build-parallel-H-OpenMP build-mpi
+# Varianta PTHREADS cu Horspool
+PTHREADS_PATH_BF = src/bruteforce_pthreads.c
+PTHREADS_OUTPUT_BF = build/bruteforce_pthreads
+#######################################
 
-build-serial-BM:
-	$(CC) $(CFLAGS) $(SERIAL_PATH_BM) -o $(SERIAL_OUTPUT_BM)
+###########################################################################
+all: build-serial-H build-omp-H build-mpi-H build-serial-BF
 
 build-serial-H:
 	$(CC) $(CFLAGS) $(SERIAL_PATH_H) -o $(SERIAL_OUTPUT_H)
 
+build-omp-H:
+	$(CC) $(CFLAGS) -fopenmp -g $(OMP_PATH_H) -o $(OMP_OUTPUT_H)
+
+build-mpi-H:
+	$(MPICC) $(CFLAGS) $(MPI_PATH_H) -o $(MPI_OUTPUT_H)
+
+#build-pthreads-H: #TODO - path e deja definit
+
+###########################################################################
 build-serial-BF:
 	$(CC) $(CFLAGS) $(SERIAL_PATH_BF) -o $(SERIAL_OUTPUT_BF)
 
-build-parallel-H-OpenMP:
-	$(CC) $(CFLAGS) -fopenmp -g $(PARALLEL_PATH_H_OPENMP) -o $(PARALLEL_OUTPUT_H_OPENMP)
+#build-omp-BF: #TODO - path e deja definit
 
-# build-mpi:
-# 	$(MPICC) $(CFLAGS) $(PARALLEL_PATH_H_MPI) -o $(PARALLEL_OUTPUT_H_MPI)
+
+#build-mpi-BF: #TODO - path e deja definit
+
+
+#build-pthreads-BF: #TODO - path e deja definit
+
+###########################################################################
 
 clean:
 	rm build/*
