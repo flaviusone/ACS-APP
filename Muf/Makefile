@@ -14,11 +14,11 @@ SERIAL_OUTPUT_H = build/boyer_horspool
 
 # Varianta OMP cu Horspool
 OMP_PATH_H = src/boyer_horspool_omp.c
-OMP_OUTPUT_H = build/horspool_OMP
+OMP_OUTPUT_H = build/boyer_horspool_omp
 
 # Varianta MPI cu Horspool
 MPI_PATH_H = src/boyer_horspool_mpi.c
-MPI_OUTPUT_H = build/horspool_mpi
+MPI_OUTPUT_H = build/boyer_horspool_mpi
 
 # Varianta PTHREADS cu Horspool
 PTHREADS_PATH_H = src/boyer_horspool_pthreads.c
@@ -30,7 +30,7 @@ SERIAL_OUTPUT_BF = build/bruteforce
 
 # Varianta OMP cu Horspool
 OMP_PATH_BF = src/bruteforce_omp.c
-OMP_OUTPUT_BF = build/bruteforce_OMP
+OMP_OUTPUT_BF = build/bruteforce_omp
 
 # Varianta MPI cu Horspool
 MPI_PATH_BF = src/bruteforce_mpi.c
