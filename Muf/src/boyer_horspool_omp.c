@@ -105,10 +105,9 @@ int main(int argc, char *argv[]){
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
   int j,numthreads;               /* Aux */
-  int i, sum=0;                   /* Aux */
-  char **threads_buffs;           /* Vector de stringuri de la fiecare thread */
-  char *thread_buff, *aux;        /* Bufferul fiecarui thread */
-  char *final_buff;               /* Bufferul final ce se printeaza in fisier */
+  int i;                          /* Aux */
+  char *thread_buff;              /* Bufferul fiecarui thread */
+  char **results;
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
@@ -127,20 +126,16 @@ int main(int argc, char *argv[]){
 
   /* Calculam nr de chunks */
   int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
+  results = calloc(chunks, sizeof(char *));
 
   /* Deschidem fisier de output */
   fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
   if( !fpo ) perror(output_file),exit(1);
 
   /* Setam num threads */
-  numthreads = 4;
-  omp_set_num_threads(numthreads);
+  omp_set_num_threads(4);
 
-  /* Alocam vectorul de buffere pentru threaduri */
-  threads_buffs = calloc(numthreads, sizeof(char *));
-
-
-  #pragma omp parallel for private(j, haystack, hay, thread_buff, buffer, aux) shared(threads_buffs)
+  #pragma omp parallel for private(j, haystack, hay, thread_buff, buffer)
   for (j = 0; j < chunks; j++) {
 
     /* Alocam bufferul privat thread_buff */
@@ -150,8 +145,12 @@ int main(int argc, char *argv[]){
     haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
 
     /* Copiem un chunk in haystack */
-    fseek(fp, j * CHUNKSIZE, SEEK_SET);
-    int dimi = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+    int dimi;
+    #pragma omp critical
+    {
+      fseek(fp, j * CHUNKSIZE, SEEK_SET);
+      dimi = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+    }
 
     /* Sarim peste primul cuvant si luam ultimul cuvant */
     int delay, final;
@@ -200,9 +199,6 @@ int main(int argc, char *argv[]){
         buffer[counter_start + counter_end] = '\n';
         buffer[counter_start + counter_end+1] = '\0';
 
-        /* Scriem cuvantul in fisier */
-        // fprintf(fpo, "%s\n", buffer);
-
         /* Adaugam cuvantul la bufferul local */
         thread_buff = realloc(thread_buff, strlen(thread_buff) + strlen(buffer) + sizeof(char));
         if (!thread_buff){
@@ -213,30 +209,9 @@ int main(int argc, char *argv[]){
 
         i = b - haystack + strlen((char*)needle);
       }
-      // printf("Thread %d cu buffer %s\n", omp_get_thread_num(), thread_buff);
 
-      /* Punem bufferul format in noul vector */
-      if(threads_buffs[omp_get_thread_num()] == NULL)
-      {
-        threads_buffs[omp_get_thread_num()] = thread_buff;
-      }
-      /* E deja ceva acolo deci trebuie sa marim spatiul alocat */
-      else
-      {
-        // #pragma omp critical
-        // {
-          aux = threads_buffs[omp_get_thread_num()];
-          char* aux2 = calloc(strlen(aux) + strlen(thread_buff) + sizeof(char), sizeof(char));
-          strcat(aux2, aux);
-          strcat(aux2, thread_buff);
-          threads_buffs[omp_get_thread_num()] = aux2;
-          free(aux);
-
-          // aux = realloc(aux, strlen(aux) + strlen(thread_buff) + sizeof(char));
-          // strcat(aux, thread_buff);
-        // }
-      }
-
+      /* Adaugam rezultatul la buffer */
+      results[j] = thread_buff;
 
       gettimeofday(&finish,0);
 
@@ -248,16 +223,9 @@ int main(int argc, char *argv[]){
     free(haystack);
   }
 
-  /* Formam stringul final */
-  for (i = 0; i < numthreads; ++i)
-    sum += strlen(threads_buffs[i]);
-  final_buff = calloc(sum, sizeof(char));
-  for (i = 0; i < numthreads; ++i){
-    strcat(final_buff, threads_buffs[i]);
-  }
-
-  // printf("%s\n", final_buff);
-  fprintf(fpo, "%s", final_buff);
+  /* Scriem rezultatele in fisier */
+  for (i = 0; i < chunks; ++i)
+    fprintf(fpo, "%s", results[i]);
 
   fclose(fp);
   fclose(fpo);
