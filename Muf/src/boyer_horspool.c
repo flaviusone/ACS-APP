@@ -68,14 +68,12 @@ int main(int argc, char *argv[]){
   char input_file[50];            /* Input file */
   char output_file[50];           /* Output file */
   unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
-  char buffer[50];                /* Buffer auxiliar */
   struct timeval start,finish;    /* Pentru calcul timp */
   double t, timp;                 /* Pentru calcul timp */
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack, *hay;  /* Buffer ce contine fisierul in care se cauta */
-  long i=0;                       /* Aux */
   int j, offset;
-  char **results;
+
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
@@ -94,7 +92,7 @@ int main(int argc, char *argv[]){
 
   /* Calculam nr de chunks */
   int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
-  results = calloc(chunks, sizeof(char *));
+
 
   /* Deschidem fisier de output */
   fpo = fopen ( strcat(output_file, "_H") , "w+" );
@@ -116,7 +114,6 @@ int main(int argc, char *argv[]){
     strncpy((char*)hay, (char*)haystack, size);
     free(haystack);
     haystack = hay;
-    i = 0;
 
     /* Start la numarare timp */
     gettimeofday(&start,0);
