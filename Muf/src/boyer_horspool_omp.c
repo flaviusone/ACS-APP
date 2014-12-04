@@ -104,7 +104,11 @@ int main(int argc, char *argv[]){
   double t, timp_total;           /* Pentru calcul timp */
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
-  int j;                          /* Aux */
+  int j,numthreads;               /* Aux */
+  int i, sum=0;                   /* Aux */
+  char **threads_buffs;           /* Vector de stringuri de la fiecare thread */
+  char *thread_buff, *aux;        /* Bufferul fiecarui thread */
+  char *final_buff;               /* Bufferul final ce se printeaza in fisier */
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
@@ -128,8 +132,19 @@ int main(int argc, char *argv[]){
   fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
   if( !fpo ) perror(output_file),exit(1);
 
-  // #pragma omp parallel for private(j, haystack, hay, needle)
+  /* Setam num threads */
+  numthreads = 4;
+  omp_set_num_threads(numthreads);
+
+  /* Alocam vectorul de buffere pentru threaduri */
+  threads_buffs = calloc(numthreads, sizeof(char *));
+
+
+  #pragma omp parallel for private(j, haystack, hay, thread_buff, buffer, aux) shared(threads_buffs)
   for (j = 0; j < chunks; j++) {
+
+    /* Alocam bufferul privat thread_buff */
+    thread_buff = calloc(1, sizeof(char));
 
     /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
     haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
@@ -155,9 +170,9 @@ int main(int argc, char *argv[]){
     {
       gettimeofday(&start,0);
 
-       long i = 0;
+      long i = 0;
 
-       while(i < size){
+      while(i < size){
 
         /* Cautam urmatoarea aparitie a secventei de cautat */
         const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
@@ -166,7 +181,6 @@ int main(int argc, char *argv[]){
         if(b == NULL){
           break;
         }
-
         /* Setam capetele de cautare */
         int counter_start = 1;
         int counter_end = strlen((char*) needle);
@@ -183,13 +197,46 @@ int main(int argc, char *argv[]){
         /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
         memset(buffer, 0, sizeof(buffer));
         strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-        buffer[counter_start + counter_end] = '\0';
+        buffer[counter_start + counter_end] = '\n';
+        buffer[counter_start + counter_end+1] = '\0';
 
         /* Scriem cuvantul in fisier */
-        fprintf(fpo, "%s\n", buffer);
+        // fprintf(fpo, "%s\n", buffer);
+
+        /* Adaugam cuvantul la bufferul local */
+        thread_buff = realloc(thread_buff, strlen(thread_buff) + strlen(buffer) + sizeof(char));
+        if (!thread_buff){
+           printf("Error Realloc\n");
+           // return -1;
+        }
+        strcat(thread_buff, buffer);
 
         i = b - haystack + strlen((char*)needle);
-       }
+      }
+      // printf("Thread %d cu buffer %s\n", omp_get_thread_num(), thread_buff);
+
+      /* Punem bufferul format in noul vector */
+      if(threads_buffs[omp_get_thread_num()] == NULL)
+      {
+        threads_buffs[omp_get_thread_num()] = thread_buff;
+      }
+      /* E deja ceva acolo deci trebuie sa marim spatiul alocat */
+      else
+      {
+        // #pragma omp critical
+        // {
+          aux = threads_buffs[omp_get_thread_num()];
+          char* aux2 = calloc(strlen(aux) + strlen(thread_buff) + sizeof(char), sizeof(char));
+          strcat(aux2, aux);
+          strcat(aux2, thread_buff);
+          threads_buffs[omp_get_thread_num()] = aux2;
+          free(aux);
+
+          // aux = realloc(aux, strlen(aux) + strlen(thread_buff) + sizeof(char));
+          // strcat(aux, thread_buff);
+        // }
+      }
+
 
       gettimeofday(&finish,0);
 
@@ -200,6 +247,17 @@ int main(int argc, char *argv[]){
     }
     free(haystack);
   }
+
+  /* Formam stringul final */
+  for (i = 0; i < numthreads; ++i)
+    sum += strlen(threads_buffs[i]);
+  final_buff = calloc(sum, sizeof(char));
+  for (i = 0; i < numthreads; ++i){
+    strcat(final_buff, threads_buffs[i]);
+  }
+
+  // printf("%s\n", final_buff);
+  fprintf(fpo, "%s", final_buff);
 
   fclose(fp);
   fclose(fpo);
