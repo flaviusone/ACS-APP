@@ -37,7 +37,7 @@ PTHREADS_OUTPUT_BF = build/bruteforce_pthreads
 #######################################
 
 ###########################################################################
-all: build-serial-H build-omp-H build-mpi-H build-serial-BF
+all: build-serial-H build-omp-H build-mpi-H build-pthreads-H build-serial-BF
 
 build-serial-H:
 	$(CC) $(CFLAGS) $(SERIAL_PATH_H) -o $(SERIAL_OUTPUT_H)
@@ -48,7 +48,8 @@ build-omp-H:
 build-mpi-H:
 	$(MPICC) $(CFLAGS) $(MPI_PATH_H) -o $(MPI_OUTPUT_H)
 
-#build-pthreads-H: #TODO - path e deja definit
+build-pthreads-H:
+	$(CC) $(CFLAGS) $(PTHREADS_PATH_H) -o $(PTHREADS_OUTPUT_H) -lpthread
 
 ###########################################################################
 build-serial-BF:
