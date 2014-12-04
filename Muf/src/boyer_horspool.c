@@ -6,21 +6,76 @@
 #include <time.h>
 #include "boyer_horspool.h"
 
+#define CHUNKSIZE 102400
+
+int last (unsigned char * haystack, int dim) {
+  int final = CHUNKSIZE;
+  if (dim <= CHUNKSIZE)
+    return dim;
+  while ((char)haystack[final] != ' ')
+    final++;
+  return final;
+}
+
+void cautare_aparitii(unsigned char* haystack,unsigned char* needle, int size, FILE *fpo) {
+
+  char buffer[50];
+  long i = 0;
+  while(i < size){
+
+    /* Cautam urmatoarea aparitie a secventei de cautat */
+    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
+
+    /* Daca b null atunci am terminat */
+    if(b == NULL){
+      break;
+    }
+
+    /* Setam capetele de cautare */
+    int counter_start = 1;
+    int counter_end = strlen((char*) needle);
+
+    /* Cautam de la cuvant in spate pana la space */
+    while(*(b-counter_start) != ' '){
+      counter_start++;
+    }
+    /* Cautam de la cuvant in fata pana la space */
+    while((*(b+counter_end) != ' ') && b-haystack + counter_end < size){
+      counter_end++;
+    }
+
+    /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
+    memset(buffer, 0, sizeof(buffer));
+    strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
+    buffer[counter_start + counter_end] = '\0';
+
+    /* Scriem cuvantul in fisier */
+    fprintf(fpo, "%s\n", buffer);
+
+    i = b - haystack + strlen((char*)needle);
+  }
+  free(haystack);
+
+}
+
+
 int main(int argc, char *argv[]){
 
   /*==============================================
   =            Initializare variabile            =
   ==============================================*/
-  FILE *fp;
+  FILE *fp, *fpo;
   char input_file[50];            /* Input file */
   char output_file[50];           /* Output file */
   unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
   char buffer[50];                /* Buffer auxiliar */
   struct timeval start,finish;    /* Pentru calcul timp */
-  double t;                       /* Pentru calcul timp */
+  double t, timp;                 /* Pentru calcul timp */
   long lSize;                     /* Lungime haystack */
-  unsigned char *haystack;        /* Buffer ce contine fisierul in care se cauta */
+  unsigned char *haystack, *hay;  /* Buffer ce contine fisierul in care se cauta */
   long i=0;                       /* Aux */
+  int j, offset;
+  char **results;
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
@@ -37,69 +92,52 @@ int main(int argc, char *argv[]){
   lSize = ftell( fp );
   rewind( fp );
 
-  /* Alocam memorie pentru haystack (de dimensiunea fisierului) */
-  haystack = calloc( 1, lSize+1 );
-  if( !haystack ) fclose(fp),fputs("memory alloc fails",stderr),exit(1);
-
-  /* Copiem fisierul in haystack */
-  if( 1!=fread( haystack , lSize, 1 , fp) )
-  fclose(fp),free(haystack),fputs("entire read fails",stderr),exit(1);
-  fclose(fp);
+  /* Calculam nr de chunks */
+  int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
+  results = calloc(chunks, sizeof(char *));
 
   /* Deschidem fisier de output */
-  fp = fopen ( strcat(output_file, "_H") , "w+" );
-  if( !fp ) perror(output_file),exit(1);
+  fpo = fopen ( strcat(output_file, "_H") , "w+" );
+  if( !fpo ) perror(output_file),exit(1);
 
-  /* Start la numarare timp */
-  gettimeofday(&start,0);
+  offset = 0;
 
+  for (j = 0; j < chunks; j++) {
+    /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
+    haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
 
-  while(i < lSize){
+    fseek(fp, offset, SEEK_SET);
+    int dim = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
 
-    /* Cautam urmatoarea aparitie a secventei de cautat */
-    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, lSize - i, needle, strlen((char*)needle));
+    int size = last(haystack, dim);
+    offset += size;
+    /* Alocam spatiu pentru noul chunk format */
+    hay = calloc(size, sizeof(unsigned char));
+    strncpy((char*)hay, (char*)haystack, size);
+    free(haystack);
+    haystack = hay;
+    i = 0;
 
-    /* Daca b null atunci am terminat */
-    if(b == NULL){
-      // fprintf(fp, "EOF\n");
-      break;
-    }
+    /* Start la numarare timp */
+    gettimeofday(&start,0);
 
-    /* Setam capetele de cautare */
-    int counter_start = 1;
-    int counter_end = strlen((char*) needle);
+    /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
+    cautare_aparitii(haystack, needle, size, fpo);
 
-    /* Cautam de la cuvant in spate pana la space */
-    while(*(b-counter_start) != ' '){
-      counter_start++;
-    }
-    /* Cautam de la cuvant in fata pana la space */
-    while((*(b+counter_end) != ' ') && counter_end < lSize){
-      counter_end++;
-    }
+    /* Stop la numarare timp */
+    gettimeofday(&finish,0);
 
-    /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
-    memset(buffer, 0, sizeof(buffer));
-    strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-    buffer[counter_start + counter_end] = '\0';
-
-    /* Scriem cuvantul in fisier */
-    fprintf(fp, "%s\n", buffer);
-
-    i = b - haystack + strlen((char*)needle);
+    /* Calcul timp desfasurare */
+    t = (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
+    / 1000000.0;
+    timp += t;
   }
 
-  /* Stop la numarare timp */
-  gettimeofday(&finish,0);
-
-  /* Calcul timp desfasurare */
-  t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
-   / 1000000.0;
-  printf("Time elapsed %lf\n", t);
+  printf("Time elapsed %lf\n", timp);
 
   /* Cleanups */
   fclose(fp);
-  free(haystack);
+  fclose(fpo);
 
   return 0;
 }
