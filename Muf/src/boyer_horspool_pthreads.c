@@ -216,8 +216,10 @@ int main(int argc, char *argv[]){
       thread_task->thread_no = i;
       thread_task->chunksize = chunks/numthreads + 1;
       if (i == numthreads - 1)
+        /* last chunk = ultima bucata ramasa, pt ultimul thread = chunks - (numarul de chunk-ri pt fiecare thread)*(toate thr mai putin ultimul) */
         thread_task->last_chunk = chunks - (chunks / numthreads + 1) * (numthreads - 1);
       else
+        /* Pentru orice alt thread in afara de ultimul, in ultimul chunk al treadului vor fi tot atatea chunk-uri  ca si pana atunci (chunksize)*/
         thread_task->last_chunk = chunks/numthreads + 1;;
       pthread_create( threads + i, NULL, thread_job, thread_task);
   }
