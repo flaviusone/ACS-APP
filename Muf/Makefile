@@ -1,8 +1,3 @@
-#######################################
-# APP 2014
-# Team Muf
-# Irina Gosu & Flavius Tirnacop 341C1
-#######################################
 CC=gcc
 MPICC=mpicc
 CFLAGS = -Wall
