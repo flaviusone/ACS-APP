@@ -72,7 +72,7 @@ int main(int argc, char *argv[]){
     chunksize = lSize / numtasks;
 
     /* Alocam Strlens vector */
-    strlens = malloc(numtasks*sizeof(int));
+    strlens = calloc(numtasks, sizeof(int));
 
     /* Start la numarare timp */
     gettimeofday(&start,0);
@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
   MPI_Scatter(haystack, chunksize, MPI_UNSIGNED_CHAR, chunk_haystack, chunksize, MPI_UNSIGNED_CHAR, 0, MPI_COMM_WORLD);
 
   // MPI_Barrier(MPI_COMM_WORLD);
-  out_buff=malloc(sizeof(char));
+  out_buff=calloc(1, sizeof(char));
   i = 0;
   while(i < chunksize){
 
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]){
     {
       sum += *(strlens+i);
     }
-    final_buff = malloc(sum*sizeof(char));
+    final_buff = calloc(sum, sizeof(char));
 
     /* Pun intai bucata mea in final_buff */
     sprintf(final_buff, "%s", out_buff);
@@ -162,7 +162,7 @@ int main(int argc, char *argv[]){
     /* Fac recieve de la toate celelalte taskuri la out_buff */
     for (i = 1; i < numtasks; ++i)
     {
-      char* aux_buffer = malloc(strlens[i]*sizeof(char));
+      char* aux_buffer = calloc(strlens[i], sizeof(char));
       MPI_Recv(aux_buffer, strlens[i], MPI_CHAR, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
       strcat(final_buff, aux_buffer);
       free(aux_buffer);
