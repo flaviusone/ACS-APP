@@ -40,7 +40,7 @@ int last (unsigned char * haystack, int dim) {
 *
 **/
 
-char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
+char* cautare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
 {
   char* thread_buff;
   long i = 0;
@@ -97,6 +97,7 @@ typedef struct{
   unsigned char* needle;
   int thread_no;
   int chunksize;
+  int last_chunk;
 } _thread_task;
 
 void *thread_job(void *ptr)
@@ -109,11 +110,12 @@ void *thread_job(void *ptr)
   _thread_task *thread_task = (_thread_task *) ptr;
   int thread_no = thread_task->thread_no;
   int chunksize = thread_task->chunksize;
+  int last_chunk = thread_task->last_chunk;
   unsigned char *needle = thread_task->needle;
   FILE *fp = thread_task->f;
 
 
-  for (j = thread_no*chunksize; j < thread_no*chunksize+chunksize; j++) {
+  for (j = thread_no*chunksize; j < thread_no*chunksize+last_chunk; j++) {
     /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
     haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
 
@@ -141,16 +143,18 @@ void *thread_job(void *ptr)
     /* Start la numarare timp */
     gettimeofday(&start,0);
     /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
-    results[j] = cauare_aparitii(haystack, needle, size);
+    results[j] = cautare_aparitii(haystack, needle, size);
     /* Stop la numarare timp */
+
     gettimeofday(&finish,0);
+    /* Calcul timp desfasurare */
+    t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
+    / 1000000.0;
+    timp_total += t;
   }
 
-  /* Calcul timp desfasurare */
-  t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
-  / 1000000.0;
 
-  timp_total += t;
+
   return 0;
 }
 
@@ -210,8 +214,11 @@ int main(int argc, char *argv[]){
       thread_task->needle = needle;
       thread_task->f = fp;
       thread_task->thread_no = i;
-      thread_task->chunksize = chunks/numthreads;
-
+      thread_task->chunksize = chunks/numthreads + 1;
+      if (i == numthreads - 1)
+        thread_task->last_chunk = chunks - (chunks / numthreads + 1) * (numthreads - 1);
+      else
+        thread_task->last_chunk = chunks/numthreads + 1;;
       pthread_create( threads + i, NULL, thread_job, thread_task);
   }
 
@@ -220,10 +227,8 @@ int main(int argc, char *argv[]){
       pthread_join(threads[i], NULL);;
   }
 
-  for (i = 0; i < chunks; ++i)
-  {
-    // fprintf(fpo, "%s", results[i]);
-    printf("%s", results[i]);
+  for (i = 0; i < chunks; ++i){
+     fprintf(fpo, "%s", results[i]);
   }
 
 
