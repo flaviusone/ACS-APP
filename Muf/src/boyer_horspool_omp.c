@@ -30,6 +30,65 @@ int last (unsigned char * haystack, int dim) {
   return final;
 }
 
+/**
+*
+* Cauta toate aparitiile lui needle in haystack
+* Returneaza un string cu cuvintele gasite separate prin \n
+*
+**/
+
+char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
+{
+  char* thread_buff;
+  long i = 0;
+  char buffer[50];                /* Buffer auxiliar */
+
+  /* Alocam bufferul privat thread_buff */
+  thread_buff = calloc(1, sizeof(char));
+
+  while(i < size){
+    /* Cautam urmatoarea aparitie a secventei de cautat */
+    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
+
+    /* Daca b null atunci am terminat */
+    if(b == NULL){
+      break;
+    }
+    /* Setam capetele de cautare */
+    int counter_start = 1;
+    int counter_end = strlen((char*) needle);
+
+    /* Cautam de la cuvant in spate pana la space */
+    while(*(b-counter_start) != ' '){
+      counter_start++;
+    }
+    /* Cautam de la cuvant in fata pana la space */
+    while((*(b+counter_end) != ' ') && b-haystack+counter_end < size){
+      counter_end++;
+    }
+
+    /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
+    memset(buffer, 0, sizeof(buffer));
+    strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
+    buffer[counter_start + counter_end] = '\n';
+    buffer[counter_start + counter_end+1] = '\0';
+
+    /* Adaugam cuvantul la bufferul local */
+    thread_buff = realloc(thread_buff, strlen(thread_buff) + strlen(buffer) + sizeof(char));
+    if (!thread_buff){
+       printf("Error Realloc\n");
+       // return -1;
+    }
+    strcat(thread_buff, buffer);
+
+    i = b - haystack + strlen((char*)needle);
+  }
+
+  free(haystack);
+
+  return thread_buff;
+}
+
 int main(int argc, char *argv[]){
 
   /*==============================================
@@ -39,14 +98,11 @@ int main(int argc, char *argv[]){
   char input_file[50];            /* Input file */
   char output_file[50];           /* Output file */
   unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
-  char buffer[50];                /* Buffer auxiliar */
-  struct timeval start,finish;    /* Pentru calcul timp */
-  double t, timp_total;           /* Pentru calcul timp */
+  double timp_total;              /* Pentru calcul timp */
   long lSize;                     /* Lungime haystack */
   unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
   int j,numthreads;               /* Aux */
   int i;                          /* Aux */
-  char *thread_buff;              /* Bufferul fiecarui thread */
   char **results;
   /*-----  End of Initializare variabile  ------*/
 
@@ -75,12 +131,8 @@ int main(int argc, char *argv[]){
   /* Setam num threads */
   omp_set_num_threads(4);
 
-  #pragma omp parallel for private(j, haystack, hay, thread_buff, buffer, t) shared(timp_total)
+  #pragma omp parallel for private(j, haystack, hay) shared(timp_total)
   for (j = 0; j < chunks; j++) {
-
-    /* Alocam bufferul privat thread_buff */
-    thread_buff = calloc(1, sizeof(char));
-
     /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
     haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
 
@@ -105,61 +157,16 @@ int main(int argc, char *argv[]){
 
     /* Procesam cu noul size */
     int size = final - delay;
-    if (size > 0)
-    {
-      double start_time = omp_get_wtime();
 
-      long i = 0;
+    double start_time = omp_get_wtime();
 
-      while(i < size){
+    /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
+    results[j] = cauare_aparitii(haystack, needle, size);
 
-        /* Cautam urmatoarea aparitie a secventei de cautat */
-        const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
+    double stop_time = omp_get_wtime();
 
-        /* Daca b null atunci am terminat */
-        if(b == NULL){
-          break;
-        }
-        /* Setam capetele de cautare */
-        int counter_start = 1;
-        int counter_end = strlen((char*) needle);
-
-        /* Cautam de la cuvant in spate pana la space */
-        while(*(b-counter_start) != ' '){
-          counter_start++;
-        }
-        /* Cautam de la cuvant in fata pana la space */
-        while((*(b+counter_end) != ' ') && b-haystack+counter_end < size){
-          counter_end++;
-        }
-
-        /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
-        memset(buffer, 0, sizeof(buffer));
-        strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-        buffer[counter_start + counter_end] = '\n';
-        buffer[counter_start + counter_end+1] = '\0';
-
-        /* Adaugam cuvantul la bufferul local */
-        thread_buff = realloc(thread_buff, strlen(thread_buff) + strlen(buffer) + sizeof(char));
-        if (!thread_buff){
-           printf("Error Realloc\n");
-           // return -1;
-        }
-        strcat(thread_buff, buffer);
-
-        i = b - haystack + strlen((char*)needle);
-      }
-
-      /* Adaugam rezultatul la buffer */
-      results[j] = thread_buff;
-
-      double stop_time = omp_get_wtime();
-
-      #pragma omp atomic
-      timp_total += stop_time - start_time;
-
-    }
-    free(haystack);
+    #pragma omp atomic
+    timp_total += stop_time - start_time;
   }
 
   /* Scriem rezultatele in fisier */
