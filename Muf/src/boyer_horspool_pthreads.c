@@ -12,6 +12,7 @@
 
 char **results;
 double timp_total;              /* Pentru calcul timp */
+pthread_mutex_t *mutex;          /* Mutex pt sincronizare */
 
 
 int first (unsigned char * haystack, int chunk_size) {
@@ -91,22 +92,65 @@ char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
   return thread_buff;
 }
 
+typedef struct{
+  FILE *f;
+  unsigned char* needle;
+  int thread_no;
+  int chunksize;
+} _thread_task;
+
 void *thread_job(void *ptr)
 {
   struct timeval start,finish;    /* Pentru calcul timp */
   double t;                       /* Pentru calcul timp */
+  int j;
+  unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
 
-  /* Start la numarare timp */
-  gettimeofday(&start,0);
+  _thread_task *thread_task = (_thread_task *) ptr;
+  int thread_no = thread_task->thread_no;
+  int chunksize = thread_task->chunksize;
+  unsigned char *needle = thread_task->needle;
+  FILE *fp = thread_task->f;
 
-  /* Stop la numarare timp */
-  gettimeofday(&finish,0);
+
+  for (j = thread_no*chunksize; j < thread_no*chunksize+chunksize; j++) {
+    /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
+    haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
+
+    /* Copiem un chunk in haystack. Folosim mutex.*/
+    int dimi;
+    pthread_mutex_lock(mutex);
+    fseek(fp, j * CHUNKSIZE, SEEK_SET);
+    dimi = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
+    pthread_mutex_unlock(mutex);
+
+    /* Sarim peste primul cuvant si luam ultimul cuvant */
+    int delay, final;
+    delay = first(haystack, CHUNKSIZE+200);
+    final = last(haystack, dimi);
+
+    /* Alocam spatiu pentru noul chunk format */
+    hay = calloc(final - delay, sizeof(unsigned char));
+    strncpy((char*)hay, (char*)haystack+delay, final - delay);
+    free(haystack);
+    haystack = hay;
+
+    /* Procesam cu noul size */
+    int size = final - delay;
+
+    /* Start la numarare timp */
+    gettimeofday(&start,0);
+    /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
+    results[j] = cauare_aparitii(haystack, needle, size);
+    /* Stop la numarare timp */
+    gettimeofday(&finish,0);
+  }
+
   /* Calcul timp desfasurare */
   t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
   / 1000000.0;
 
   timp_total += t;
-
   return 0;
 }
 
@@ -121,10 +165,9 @@ int main(int argc, char *argv[]){
   char output_file[50];           /* Output file */
   unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
   long lSize;                     /* Lungime haystack */
-  unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
-  int j,numthreads;               /* Aux */
-  int i;                          /* Aux */
 
+  int numthreads;               /* Aux */
+  int i;                          /* Aux */
   pthread_t *threads;
   /*-----  End of Initializare variabile  ------*/
 
@@ -150,60 +193,39 @@ int main(int argc, char *argv[]){
   results = calloc(chunks, sizeof(char *));
 
   /* Deschidem fisier de output */
-  fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
+  fpo = fopen ( strcat(output_file, "_H_PTHREADS") , "w+" );
   if( !fpo ) perror(output_file),exit(1);
 
   /* Alocam vector threads */
   threads = (pthread_t*)malloc(numthreads * sizeof(pthread_t));
 
+  mutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+
   /* Create Pthreads */
   for(i = 0; i < numthreads; i++){
-      pthread_create( threads + i, NULL, thread_job, NULL);
+
+      /* Cream structura Pthreads */
+      _thread_task* thread_task;
+      thread_task = calloc(1, sizeof(_thread_task));
+      thread_task->needle = needle;
+      thread_task->f = fp;
+      thread_task->thread_no = i;
+      thread_task->chunksize = chunks/numthreads;
+
+      pthread_create( threads + i, NULL, thread_job, thread_task);
   }
 
   /* Join Pthreads */
   for (i = 0; i < numthreads; i++){
-      pthread_join(threads[i], NULL);
+      pthread_join(threads[i], NULL);;
   }
 
-  for (j = 0; j < chunks; j++) {
-    /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
-    haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
-
-    /* Copiem un chunk in haystack */
-    int dimi;
-    // #pragma omp critical
-    // {
-      fseek(fp, j * CHUNKSIZE, SEEK_SET);
-      dimi = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
-    // }
-
-    /* Sarim peste primul cuvant si luam ultimul cuvant */
-    int delay, final;
-    delay = first(haystack, CHUNKSIZE+200);
-    final = last(haystack, dimi);
-
-    /* Alocam spatiu pentru noul chunk format */
-    hay = calloc(final - delay, sizeof(unsigned char));
-    strncpy((char*)hay, (char*)haystack+delay, final - delay);
-    free(haystack);
-    haystack = hay;
-
-    /* Procesam cu noul size */
-    int size = final - delay;
-
-
-    /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
-    results[j] = cauare_aparitii(haystack, needle, size);
-
-
-    // #pragma omp atomic
-    // timp_total += stop_time - start_time;
-  }
-
-  /* Scriem rezultatele in fisier */
   for (i = 0; i < chunks; ++i)
-    fprintf(fpo, "%s", results[i]);
+  {
+    // fprintf(fpo, "%s", results[i]);
+    printf("%s", results[i]);
+  }
+
 
   fclose(fp);
   fclose(fpo);
