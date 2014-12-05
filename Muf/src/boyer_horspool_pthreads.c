@@ -11,8 +11,8 @@
 #define SIZE CHUNKSIZE+200
 
 char **results;
-double timp_total;              /* Pentru calcul timp */
-pthread_mutex_t *mutex;          /* Mutex pt sincronizare */
+double timp_total;                  /* Pentru calcul timp */
+pthread_mutex_t *mutex,*time_mutex; /* Mutex pt sincronizare */
 
 
 int first (unsigned char * haystack, int chunk_size) {
@@ -150,7 +150,9 @@ void *thread_job(void *ptr)
     /* Calcul timp desfasurare */
     t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
     / 1000000.0;
+    pthread_mutex_lock(time_mutex);
     timp_total += t;
+    pthread_mutex_unlock(time_mutex);
   }
 
 
@@ -204,6 +206,7 @@ int main(int argc, char *argv[]){
   threads = (pthread_t*)malloc(numthreads * sizeof(pthread_t));
 
   mutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+  time_mutex = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
 
   /* Create Pthreads */
   for(i = 0; i < numthreads; i++){
