@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 33
+/svn/APP2014/!svn/ver/289/Muf/src
+END
+boyer_horspool.h
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/APP2014/!svn/ver/289/Muf/src/boyer_horspool.h
+END
+boyer_horspool_mpi.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/APP2014/!svn/ver/289/Muf/src/boyer_horspool_mpi.c
+END
+bruteforce_pthreads.c
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/APP2014/!svn/ver/289/Muf/src/bruteforce_pthreads.c
+END
+bruteforce_omp.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/APP2014/!svn/ver/289/Muf/src/bruteforce_omp.c
+END
+boyer_horspool_pthreads.c
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/APP2014/!svn/ver/289/Muf/src/boyer_horspool_pthreads.c
+END
+boyer_horspool_omp.c
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/APP2014/!svn/ver/289/Muf/src/boyer_horspool_omp.c
+END
+bruteforce.c
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/APP2014/!svn/ver/289/Muf/src/bruteforce.c
+END
+boyer_horspool.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/APP2014/!svn/ver/289/Muf/src/boyer_horspool.c
+END
+bruteforce_mpi.c
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/APP2014/!svn/ver/289/Muf/src/bruteforce_mpi.c
+END
