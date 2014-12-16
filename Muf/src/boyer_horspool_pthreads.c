@@ -239,6 +239,6 @@ int main(int argc, char *argv[]){
 
   fclose(fp);
   fclose(fpo);
-  printf("Time elapsed %lf\n", timp_total/numthreads);
+  printf("PT %d %lf\n", atoi(argv[1]), timp_total/numthreads);
   return 0;
 }

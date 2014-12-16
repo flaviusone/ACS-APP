@@ -130,7 +130,7 @@ int main(int argc, char *argv[]){
     timp += t;
   }
 
-  printf("Time elapsed %lf\n", timp);
+  printf("S %lf\n", timp);
 
   /* Cleanups */
   fclose(fp);

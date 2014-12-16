@@ -177,7 +177,7 @@ int main(int argc, char *argv[]){
     /* Calcul timp desfasurare */
     t= (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
      / 1000000.0;
-    printf("Time elapsed %lf\n", t);
+    printf("MPI %d %lf\n", numtasks, t);
 
     /* Cleanups */
     fclose(fp);

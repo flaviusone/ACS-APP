@@ -175,6 +175,6 @@ int main(int argc, char *argv[]){
 
   fclose(fp);
   fclose(fpo);
-  printf("Time elapsed %lf\n", timp_total/4);
+  printf("OMP %d %lf\n", atoi(argv[1]), timp_total/4);
   return 0;
 }
