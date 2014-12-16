@@ -107,7 +107,7 @@ int main(int argc, char *argv[]){
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
-  fp = fopen(argv[1], "r");
+  fp = fopen(argv[2], "r");
   fscanf(fp, "%s", input_file);
   fscanf(fp, "%s", output_file);
   fscanf(fp, "%s", needle);
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]){
   if( !fpo ) perror(output_file),exit(1);
 
   /* Setam num threads */
-  omp_set_num_threads(4);
+  omp_set_num_threads(atoi(argv[1]));
 
   #pragma omp parallel for private(j, haystack, hay) shared(timp_total)
   for (j = 0; j < chunks; j++) {
