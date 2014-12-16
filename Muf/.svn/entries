@@ -1,7 +1,7 @@
 10
 
 dir
-36
+290
 https://svn-batch.grid.pub.ro/svn/APP2014/Muf
 https://svn-batch.grid.pub.ro/svn/APP2014
 
@@ -23,9 +23,12 @@ flavius.tirnacop
 
 
 
-
+incomplete
 d1eb675e-4edb-470e-9b4e-3b6d5c8449bb
 
 serial
+dir
+
+src
 dir
 

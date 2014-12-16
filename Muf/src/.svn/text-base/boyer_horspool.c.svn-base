@@ -4,49 +4,25 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
-#include <omp.h>
 #include "boyer_horspool.h"
 
 #define CHUNKSIZE 102400
-#define SIZE CHUNKSIZE+200
-
-
-
-int first (unsigned char * haystack, int chunk_size) {
-  int delay = 0;
-  // while ((char)haystack[delay] != ' ' && (delay<chunk_size))
-  while ((char)haystack[delay] != ' ')
-    delay++;
-  return delay;
-}
 
 int last (unsigned char * haystack, int dim) {
   int final = CHUNKSIZE;
   if (dim <= CHUNKSIZE)
     return dim;
-  // while ((char)haystack[final] != ' ' && (final<=dim))
   while ((char)haystack[final] != ' ')
     final++;
   return final;
 }
 
-/**
-*
-* Cauta toate aparitiile lui needle in haystack
-* Returneaza un string cu cuvintele gasite separate prin \n
-*
-**/
+void cautare_aparitii(unsigned char* haystack,unsigned char* needle, int size, FILE *fpo) {
 
-char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
-{
-  char* thread_buff;
+  char buffer[50];
   long i = 0;
-  char buffer[50];                /* Buffer auxiliar */
-
-  /* Alocam bufferul privat thread_buff */
-  thread_buff = calloc(1, sizeof(char));
-
   while(i < size){
+
     /* Cautam urmatoarea aparitie a secventei de cautat */
     const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
 
@@ -54,6 +30,7 @@ char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
     if(b == NULL){
       break;
     }
+
     /* Setam capetele de cautare */
     int counter_start = 1;
     int counter_end = strlen((char*) needle);
@@ -63,31 +40,24 @@ char* cauare_aparitii(unsigned char* haystack,unsigned char* needle, int size)
       counter_start++;
     }
     /* Cautam de la cuvant in fata pana la space */
-    while((*(b+counter_end) != ' ') && b-haystack+counter_end < size){
+    while((*(b+counter_end) != ' ') && b-haystack + counter_end < size){
       counter_end++;
     }
 
     /* Resetam buffer si copiem cuvantul in care se gaseste secventa noastra */
     memset(buffer, 0, sizeof(buffer));
     strncpy(buffer, (char*) b - counter_start, counter_start+counter_end);
-    buffer[counter_start + counter_end] = '\n';
-    buffer[counter_start + counter_end+1] = '\0';
+    buffer[counter_start + counter_end] = '\0';
 
-    /* Adaugam cuvantul la bufferul local */
-    thread_buff = realloc(thread_buff, strlen(thread_buff) + strlen(buffer) + sizeof(char));
-    if (!thread_buff){
-       printf("Error Realloc\n");
-       // return -1;
-    }
-    strcat(thread_buff, buffer);
+    /* Scriem cuvantul in fisier */
+    fprintf(fpo, "%s\n", buffer);
 
     i = b - haystack + strlen((char*)needle);
   }
-
   free(haystack);
 
-  return thread_buff;
 }
+
 
 int main(int argc, char *argv[]){
 
@@ -98,16 +68,16 @@ int main(int argc, char *argv[]){
   char input_file[50];            /* Input file */
   char output_file[50];           /* Output file */
   unsigned char needle[50];       /* Buffer ce stocheaza cuvantul de cautat */
-  double timp_total;              /* Pentru calcul timp */
+  struct timeval start,finish;    /* Pentru calcul timp */
+  double t, timp;                 /* Pentru calcul timp */
   long lSize;                     /* Lungime haystack */
-  unsigned char *haystack,*hay;   /* Buffer ce contine fisierul in care se cauta */
-  int j,numthreads;               /* Aux */
-  int i;                          /* Aux */
-  char **results;
+  unsigned char *haystack, *hay;  /* Buffer ce contine fisierul in care se cauta */
+  int j, offset;
+
   /*-----  End of Initializare variabile  ------*/
 
   /*  Citire date test din fisier  */
-  fp = fopen(argv[2], "r");
+  fp = fopen(argv[1], "r");
   fscanf(fp, "%s", input_file);
   fscanf(fp, "%s", output_file);
   fscanf(fp, "%s", needle);
@@ -122,59 +92,49 @@ int main(int argc, char *argv[]){
 
   /* Calculam nr de chunks */
   int chunks = lSize / CHUNKSIZE + ((lSize % CHUNKSIZE) ? 1 : 0);
-  results = calloc(chunks, sizeof(char *));
+
 
   /* Deschidem fisier de output */
-  fpo = fopen ( strcat(output_file, "_H_OMP") , "w+" );
+  fpo = fopen ( strcat(output_file, "_H") , "w+" );
   if( !fpo ) perror(output_file),exit(1);
 
-  /* Setam num threads */
-  omp_set_num_threads(atoi(argv[1]));
+  offset = 0;
 
-  #pragma omp parallel for private(j, haystack, hay) shared(timp_total)
   for (j = 0; j < chunks; j++) {
     /* Alocam memorie pentru haystack (de dimensiunea chunksize+200) */
     haystack = calloc (CHUNKSIZE + 200, sizeof(unsigned char));
 
-    /* Copiem un chunk in haystack */
-    int dimi;
-    #pragma omp critical
-    {
-      fseek(fp, j * CHUNKSIZE, SEEK_SET);
-      dimi = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
-    }
+    fseek(fp, offset, SEEK_SET);
+    int dim = (int)fread(haystack, sizeof(unsigned char), CHUNKSIZE + 200, fp);
 
-    /* Sarim peste primul cuvant si luam ultimul cuvant */
-    int delay, final;
-    delay = first(haystack, CHUNKSIZE+200);
-    final = last(haystack, dimi);
-
+    int size = last(haystack, dim);
+    offset += size;
     /* Alocam spatiu pentru noul chunk format */
-    hay = calloc(final - delay, sizeof(unsigned char));
-    strncpy((char*)hay, (char*)haystack+delay, final - delay);
+    hay = calloc(size, sizeof(unsigned char));
+    strncpy((char*)hay, (char*)haystack, size);
     free(haystack);
     haystack = hay;
 
-    /* Procesam cu noul size */
-    int size = final - delay;
-
-    double start_time = omp_get_wtime();
+    /* Start la numarare timp */
+    gettimeofday(&start,0);
 
     /* Cautam toate aparitiile lui needle in haystack in chunk-ul j */
-    results[j] = cauare_aparitii(haystack, needle, size);
+    cautare_aparitii(haystack, needle, size, fpo);
 
-    double stop_time = omp_get_wtime();
+    /* Stop la numarare timp */
+    gettimeofday(&finish,0);
 
-    #pragma omp atomic
-    timp_total += stop_time - start_time;
+    /* Calcul timp desfasurare */
+    t = (finish.tv_sec - start.tv_sec) + (double)(finish.tv_usec - start.tv_usec)
+    / 1000000.0;
+    timp += t;
   }
 
-  /* Scriem rezultatele in fisier */
-  for (i = 0; i < chunks; ++i)
-    fprintf(fpo, "%s", results[i]);
+  printf("Time elapsed %lf\n", timp);
 
+  /* Cleanups */
   fclose(fp);
   fclose(fpo);
-  printf("Time elapsed %lf\n", timp_total/4);
+
   return 0;
 }
