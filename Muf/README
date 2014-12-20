@@ -1,0 +1,15 @@
+
+Continut arhiva
+
+Makefile 	- make all va builda toate variantele in folderul build
+build/		- fisierele executabile
+inputs/		- fisierele de test
+			- fisierele de input
+outputs/	- rezutlatele testelor
+scripts/	- scripturi de testare
+			- rezultatele scripturilor
+src/		- codul sursa pentru cele 4 implementari (serail, OMP, MPI, PT).
+test_serial.sh - script de testare folosit frecvent in testare
+go.sh		- script de submisie qsub
+
+Se poate testa cu scriptul go.shpe teste mai simple sau cu testele din experimentele din folderuls cripts
