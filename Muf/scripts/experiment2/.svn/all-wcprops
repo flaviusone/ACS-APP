@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2
+END
+all_files_best_OMP.sh
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2/all_files_best_OMP.sh
+END
+all_files_best_PT.sh
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2/all_files_best_PT.sh
+END
+submit_all.sh
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2/submit_all.sh
+END
+all_files_best_MPI.sh
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2/all_files_best_MPI.sh
+END
+all_files_best_ALL.sh
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/APP2014/!svn/ver/401/Muf/scripts/experiment2/all_files_best_ALL.sh
+END

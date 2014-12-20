@@ -1,7 +1,0 @@
-Tooluri utile pentru masuratori
-
-	top -b -n 1 | grep chrome
-
-	iostat
-
-	vmstat
