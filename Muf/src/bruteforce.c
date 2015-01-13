@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <time.h>
-#include "boyer_horspool.h"
 
 #define CHUNKSIZE 102400
 
@@ -17,6 +16,26 @@ int last (unsigned char * haystack, int dim) {
   return final;
 }
 
+const unsigned char * BF(const unsigned char* haystack, size_t hlen,
+                           const unsigned char* needle,   size_t nlen)
+{
+   long i, j;
+
+   /* Sanity checks on the parameters */
+   if (nlen <= 0 || !haystack || !needle)
+        return NULL;
+
+
+   /* Searching */
+   for (j = 0; j <= hlen - nlen; ++j) {
+      for (i = 0; i < nlen && needle[i] == haystack[i + j]; ++i);
+      if (i >= nlen)
+         return haystack+j;
+   }
+   return NULL;
+}
+
+
 void cautare_aparitii(unsigned char* haystack,unsigned char* needle, int size, FILE *fpo) {
 
   char buffer[50];
@@ -24,7 +43,7 @@ void cautare_aparitii(unsigned char* haystack,unsigned char* needle, int size, F
   while(i < size){
 
     /* Cautam urmatoarea aparitie a secventei de cautat */
-    const unsigned char*  b = boyermoore_horspool_memmem(haystack + i, size - i, needle, strlen((char*)needle));
+    const unsigned char*  b = BF(haystack + i, size - i, needle, strlen((char*)needle));
 
     /* Daca b null atunci am terminat */
     if(b == NULL){

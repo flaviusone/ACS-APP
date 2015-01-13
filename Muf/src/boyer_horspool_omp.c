@@ -175,6 +175,6 @@ int main(int argc, char *argv[]){
 
   fclose(fp);
   fclose(fpo);
-  printf("OMP %d %lf\n", atoi(argv[1]), timp_total/4);
+  printf("%d %lf\n", atoi(argv[1]), timp_total/atoi(argv[1]));
   return 0;
 }
